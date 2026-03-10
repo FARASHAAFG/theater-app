@@ -9,14 +9,20 @@ declare(strict_types=1);
 use App\Controllers\HomeController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Controllers\ShowController;
 
 
 return static function (Slim\App $app): void {
 
 
     //* NOTE: Route naming pattern: [controller_name].[method_name]
+
+
     $app->get('/', [HomeController::class, 'index'])
         ->setName('home.index');
+
+    $app->get('/show', [ShowController::class, 'index'])
+        ->setName('show.index');
 
     $app->get('/home', [HomeController::class, 'index'])
         ->setName('home.index');
