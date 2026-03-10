@@ -65,6 +65,7 @@
         {
             "name": "frostybee/swarm-icons",
             "version": "v1.0.0",
+<<<<<<< HEAD
             "source": {
                 "type": "git",
                 "url": "https://github.com/frostybee/swarm-icons.git",
@@ -145,15 +146,97 @@
         {
             "name": "laravel/serializable-closure",
             "version": "v2.0.9",
+=======
+>>>>>>> a719f889b54ecc0982b8b73d722c3717562e4a97
             "source": {
                 "type": "git",
-                "url": "https://github.com/laravel/serializable-closure.git",
-                "reference": "8f631589ab07b7b52fead814965f5a800459cb3e"
+                "url": "https://github.com/frostybee/swarm-icons.git",
+                "reference": "960b8e9b970a77cdee6abafd2e6cd86e91862c29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/8f631589ab07b7b52fead814965f5a800459cb3e",
-                "reference": "8f631589ab07b7b52fead814965f5a800459cb3e",
+                "url": "https://api.github.com/repos/frostybee/swarm-icons/zipball/960b8e9b970a77cdee6abafd2e6cd86e91862c29",
+                "reference": "960b8e9b970a77cdee6abafd2e6cd86e91862c29",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2",
+                "psr/simple-cache": "^3.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.64",
+                "league/commonmark": "^2.0",
+                "phpstan/phpstan": "^1.10",
+                "phpstan/phpstan-strict-rules": "^1.5",
+                "phpunit/phpunit": "^10.5",
+                "symfony/console": "^7.0",
+                "symfony/var-dumper": "^6.4|^7.0",
+                "twig/twig": "^3.0"
+            },
+            "suggest": {
+                "iconify/json": "Install to use JsonCollectionProvider for offline access to 200,000+ icons",
+                "symfony/console": "For CLI commands (^6.4|^7.0)",
+                "twig/twig": "For Twig template integration (^3.0)"
+            },
+            "bin": [
+                "bin/swarm-icons"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Frostybee\\SwarmIcons\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "frostybee",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Framework-agnostic PHP SVG icon library with first-class Twig support and Iconify API integration",
+            "homepage": "https://github.com/frostybee/swarm-icons",
+            "keywords": [
+                "Heroicons",
+                "Phosphor",
+                "bootstrap-icons",
+                "iconify",
+                "icons",
+                "lucide",
+                "simple-icons",
+                "svg",
+                "tabler-icons",
+                "twig"
+            ],
+            "support": {
+                "issues": "https://github.com/frostybee/swarm-icons/issues",
+                "source": "https://github.com/frostybee/swarm-icons/tree/v1.0.0"
+            },
+            "time": "2026-02-26T06:01:58+00:00"
+        },
+        {
+            "name": "laravel/serializable-closure",
+            "version": "v2.0.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/serializable-closure.git",
+                "reference": "870fc81d2f879903dfc5b60bf8a0f94a1609e669"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/870fc81d2f879903dfc5b60bf8a0f94a1609e669",
+                "reference": "870fc81d2f879903dfc5b60bf8a0f94a1609e669",
                 "shasum": ""
             },
             "require": {
@@ -201,7 +284,7 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2026-02-03T06:55:34+00:00"
+            "time": "2026-02-20T19:59:49+00:00"
         },
         {
             "name": "monolog/monolog",
