@@ -12,17 +12,26 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Controllers\ShowController;
 
 
+
+
+
+
 return static function (Slim\App $app): void {
+
 
 
     //* NOTE: Route naming pattern: [controller_name].[method_name]
 
 
+
+
     $app->get('/', [HomeController::class, 'index'])
         ->setName('home.index');
-
     $app->get('/show', [ShowController::class, 'index'])
         ->setName('show.index');
+    $app->get('/detail/{id}', [ShowController::class, 'show'])->setName('show.detail');
+    $app->get('/show/delete/{id}', [ShowController::class, 'delete'])
+        ->setName('show.delete');
 
     $app->get('/home', [HomeController::class, 'index'])
         ->setName('home.index');
