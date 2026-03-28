@@ -1,44 +1,83 @@
 <?php
 require_once __DIR__ . '/../common/header.php';
 
-// Poster/show data
 $poster = $data['poster'];
-$schedules = $data['schedules']; // array of schedules for this poster
+$schedules = $data['schedules'];
 ?>
 
-<form method="POST" action="/theater-app/update_show/<?= (int)$poster['poster_id']; ?>">
-    <label for="title_fr">French Title:</label>
-    <input type="text" name="title_fr" id="title_fr" value="<?= $poster['title_fr'] ?>" required>
+<div class="container mt-4">
+    <h3 class="mb-4">Update Show</h3>
 
-    <label for="title">English Title:</label>
-    <input type="text" name="title" id="title" value="<?= $poster['title'] ?>" required>
+    <form method="POST" action="/theater-app/update_show/<?= (int)$poster['poster_id']; ?>">
 
-    <label for="duration">Duration:</label>
-    <input type="text" name="duration" id="duration" value="<?= $poster['duration'] ?>" required>
+        <div class="mb-3">
+            <label class="form-label">French Title</label>
+            <input type="text" name="title_fr" class="form-control" value="<?= $poster['title_fr'] ?>" required>
+        </div>
 
-    <label for="genre">Genre:</label>
-    <input type="text" name="genre" id="genre" value="<?= $poster['genre'] ?>" required>
+        <div class="mb-3">
+            <label class="form-label">English Title</label>
+            <input type="text" name="title" class="form-control" value="<?= $poster['title'] ?>" required>
+        </div>
 
-    <label for="language">Language:</label>
-    <input type="text" name="language" id="language" value="<?= $poster['language'] ?>" required>
+        <div class="d-flex">
 
-    <label for="cast">Cast:</label>
-    <input type="text" name="cast" id="cast" value="<?= $poster['cast'] ?>" required>
+            <div class="m">
+                <label class="form-label">Duration</label>
+                <input type="text" name="duration" class="form-control" value="<?= $poster['duration'] ?>" required>
+            </div>
 
-    <label for="show_type">Show Type:</label>
-    <input type="text" name="show_type" id="show_type" value="<?= $poster['show_type'] ?>" required>
+            <div class="m-2">
+                <label class="form-label">Genre</label>
+                <input type="text" name="genre" class="form-control" value="<?= $poster['genre'] ?>" required>
+            </div>
 
-    <label for="is_active">Is Active?:</label>
-    <input type="radio" name="is_active" id="is_active" value="Yes">
-    <input type="radio" name="is_active" id="is_active" value="No" checked>
+            <div class="mb-3">
+                <label class="form-label">Language</label>
+                <input type="text" name="language" class="form-control" value="<?= $poster['language'] ?>" required>
+            </div>
 
-    <label for="description">English Description:</label>
-    <input type="text" name="description" id="description" value="<?= $poster['description'] ?>" required>
+            <div class="mb-3">
+                <label class="form-label">Cast</label>
+                <input type="text" name="cast" class="form-control" value="<?= $poster['cast'] ?>" required>
+            </div>
 
-    <label for="description_fr">French Description:</label>
-    <input type="text" name="description_fr" id="description_fr" value="<?= $poster['description_fr'] ?>" required>
+            <div class="mb-3">
+                <label class="form-label">Show Type</label>
+                <input type="text" name="show_type" class="form-control" value="<?= $poster['show_type'] ?>" required>
+            </div>
+        </div>
 
-    <button type="submit">Update Show</button>
-</form>
+        <div class="mb-3">
+            <label class="form-label">Is Active?</label><br>
 
-<? require_once __DIR__ . '/../common/footer.php';
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="is_active" value="Yes"
+                    <?= $poster['is_active'] === 'Yes' ? 'checked' : '' ?>>
+                <label class="form-check-label">Yes</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="is_active" value="No"
+                    <?= $poster['is_active'] === 'No' ? 'checked' : '' ?>>
+                <label class="form-check-label">No</label>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">English Description</label>
+            <textarea name="description" class="form-control" rows="3" required><?= $poster['description'] ?></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">French Description</label>
+            <textarea name="description_fr" class="form-control" rows="3" required><?= $poster['description_fr'] ?></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Show</button>
+
+
+    </form>
+</div>
+
+<?php require_once __DIR__ . '/../common/footer.php'; ?>
