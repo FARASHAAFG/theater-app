@@ -36,6 +36,18 @@ return static function (Slim\App $app): void {
     $app->get('/home', [HomeController::class, 'index'])
         ->setName('home.index');
 
+    $app->get('/add_poster/{id}', [ShowController::class, 'init_add_poster']);
+
+    $app->post('/add_poster/{id}', [ShowController::class, 'createPoster']);
+
+    $app->get('/update_show/{id}', [ShowController::class, 'init_update_show']);
+
+    $app->post('/update_show/{id}', [ShowController::class, 'update_show']);
+
+    $app->get('/add_show', [ShowController::class, 'init_add_show']);
+
+    $app->post('/add_show', [ShowController::class, 'add_show']);
+
     // A route to display PHP configuration information.
     $app->get('/phpinfo', function (Request $request, Response $response, $args) {
         ob_start();

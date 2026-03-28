@@ -1,4 +1,5 @@
 <?php
+//! Has header required but then has a header below?
 require_once __DIR__ . '/../common/header.php';
 $posters = $data;
 
@@ -17,11 +18,10 @@ $posters = $data;
 <body>
 
     <h1 class="modal-header">All Posters </h1>
-
+    <a href="/theater-app/add_show"><button>Add New Show</button></a>
 
     <?php ?>
     <div class="gallery">
-
         <?php foreach ($posters as $poster): ?>
 
             <div class="card" style="width: 18rem;">
@@ -37,7 +37,7 @@ $posters = $data;
                 <div class="card-body">
                     <a href="/theater-app/detail/<?= (int)$poster['poster_id']; ?>" class="btn btn-primary btn-s">Details</a>
 
-                    <a href="#" class="btn btn-warning btn-s">Update</a>
+                    <a href="/theater-app/update_show/<?= (int)$poster['poster_id']; ?>" class="btn btn-warning btn-s">Update</a>
                     <a href="/theater-app/show/delete/<?= (int)$poster['poster_id']; ?>" class="btn btn-danger btn-s">Delete</a>
 
                 </div>

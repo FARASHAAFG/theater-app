@@ -19,7 +19,7 @@ return function (array $settings): array {
     // Database credentials for Docker MySQL container
     $settings['db']['host'] = 'db';  // Docker service name
     $settings['db']['username'] = 'slim_user';
-    $settings['db']['database'] = 'slim_mvc';
+    $settings['db']['database'] = 'live_play';
     $settings['db']['password'] = 'slim_pass';
     $settings['db']['port'] = '3306';
 
