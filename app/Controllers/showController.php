@@ -64,7 +64,7 @@ class ShowController extends BaseController
 
 
         if (empty($errors)) {
-            $this->showModel->createPoster($show_id, $poster_image, $is_used);
+            $this->showModel->createPoster($show_id, $is_used, $poster_image);
 
             return $this->render($response, 'admin/detail.php', ['poster' => $poster, 'schedules' => $schedules]);
         }
