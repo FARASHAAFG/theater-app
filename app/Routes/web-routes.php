@@ -15,8 +15,32 @@ use App\Controllers\ShowController;
 
 
 
-
 return static function (Slim\App $app): void {
+    $app->get('/', [HomeController::class, 'index'])
+        ->setName('home.index');
+    $app->group('/admin', function ($group) {
+        $group->get('/show', [ShowController::class, 'index'])
+            ->setName('show.index');
+
+        $group->get('/detail/{id}', [ShowController::class, 'show'])->setName('show.detail');
+        $group->get('/show/delete/{id}', [ShowController::class, 'delete'])
+            ->setName('show.delete');
+
+
+        $group->get('/add_poster/{id}', [ShowController::class, 'init_add_poster']);
+
+        $group->post('/add_poster/{id}', [ShowController::class, 'createPoster']);
+
+        $group->get('/update_show/{id}', [ShowController::class, 'init_update_show']);
+
+        $group->post('/update_show/{id}', [ShowController::class, 'update_show']);
+
+        $group->get('/add_show', [ShowController::class, 'init_add_show']);
+
+        $group->post('/add_show', [ShowController::class, 'add_show']);
+    });
+
+
 
 
 
@@ -24,6 +48,8 @@ return static function (Slim\App $app): void {
 
 
 
+
+    /*
 
     $app->get('/', [HomeController::class, 'index'])
         ->setName('home.index');
@@ -47,6 +73,7 @@ return static function (Slim\App $app): void {
     $app->get('/add_show', [ShowController::class, 'init_add_show']);
 
     $app->post('/add_show', [ShowController::class, 'add_show']);
+    */
 
     // A route to display PHP configuration information.
     $app->get('/phpinfo', function (Request $request, Response $response, $args) {

@@ -59,8 +59,11 @@ class showModel extends BaseModel
 
     public function updateShow(String $title_fr, String $title, String $duration, String $genre, String $language, String $cast, String $show_type, String $is_active, String $description, String $description_fr, int $show_id): bool
     {
-        $sql = "UPDATE `shows` SET `title_fr` = :title_fr, `title` = :title, `duration` = :duration, `genre` = :genre, `language` = :language, `cast` = :cast, `show_type` = :show_type, `is_active` = :is_active, `description` = :description, `description_fr` = :description_fr WHERE `shows`.`show_id` = :show_id;";
+        $sql = "UPDATE `shows` SET `title_fr` = :title_fr, `title` = :title, `duration` = :duration, `genre` = :genre, `language` = :language, `cast` = :cast, `show_type` = :show_type, `is_active` = :is_active, `description` = :description, `description_fr` = :description_fr WHERE `show_id` = :show_id;";
+
+
         return $this->execute($sql, ['title_fr' => $title_fr, 'title' => $title, 'duration' => intval($duration), 'genre' => $genre, 'language' => $language, 'cast' => $cast, 'show_type' => $show_type, 'is_active' => $is_active === "Yes" ? 1 : 0, 'description' => $description, 'description_fr' => $description_fr, 'show_id' => $show_id]); // ? 1 : 0 should transform the boolean into tinyint format
+
     }
 
     public function addShow(String $title_fr, String $title, String $duration, String $genre, String $language, String $cast, String $show_type, String $is_active, String $description, String $description_fr): bool

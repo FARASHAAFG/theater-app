@@ -4,7 +4,7 @@ require_once __DIR__ . '/../common/header.php';
 
 $poster = $data['poster'];
 ?>
-<form method="POST" action="/theater-app/add_poster/<?= (int)$poster['poster_id']; ?>">
+<form method="POST" action="/theater-app/admin/add_poster/<?= (int)$poster['poster_id']; ?>">
     <label for="poster_image">Select Image:</label>
     <input type="file" name="poster_image" id="poster_image" accept="image/*" required>
 

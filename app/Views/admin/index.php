@@ -51,7 +51,7 @@ $posters = $data;
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
-                <a class="btn btn-success btn-s ms-3" href="/theater-app/add_show">
+                <a class="btn btn-success btn-s ms-3" href="/theater-app/admin/add_show">
                     Add Show
                 </a>
             </div>
@@ -66,7 +66,7 @@ $posters = $data;
         <?php foreach ($posters as $poster): ?>
 
             <div class="card" style="width: 18rem;">
-                <img src="<?= $poster['poster_image'] ?>" class="card-img-top" alt="...">
+                <img src="/theater-app/<?= htmlspecialchars($poster['poster_image']) ?>" class=" card-img-top" alt="...">
                 <div class="card-body">
                     <h5 class="card-title"><?= $poster['title']; ?></h5>
                 </div>
@@ -76,10 +76,10 @@ $posters = $data;
                     <li class="list-group-item">A third item</li>
                 </ul>
                 <div class="card-body">
-                    <a href="/theater-app/detail/<?= (int)$poster['poster_id']; ?>" class="btn btn-primary btn-s">Details</a>
+                    <a href="/theater-app/admin/detail/<?= (int)$poster['poster_id']; ?>" class="btn btn-primary btn-s">Details</a>
 
-                    <a href="/theater-app/update_show/<?= (int)$poster['poster_id']; ?>" class="btn btn-warning btn-s">Update</a>
-                    <a href="/theater-app/show/delete/<?= (int)$poster['poster_id']; ?>" class="btn btn-danger btn-s">Delete</a>
+                    <a href="/theater-app/admin/update_show/<?= (int)$poster['poster_id']; ?>" class="btn btn-warning btn-s">Update</a>
+                    <a href="/theater-app/admin/show/delete/<?= (int)$poster['poster_id']; ?>" class="btn btn-danger btn-s">Delete</a>
 
 
                 </div>

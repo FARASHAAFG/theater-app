@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../common/header.php';
 ?>
 
-<form method="POST" action="/theater-app/add_show">
+<form method="POST" action="/theater-app/admin/add_show">
     <label for="title_fr">French Title:</label>
     <input type="text" name="title_fr" id="title_fr">
 

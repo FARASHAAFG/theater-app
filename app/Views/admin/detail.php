@@ -5,9 +5,9 @@ require_once __DIR__ . '/../common/header.php';
 $poster = $data['poster'];
 $schedules = $data['schedules']; // array of schedules for this poster
 ?>
-<a href="/theater-app/add_poster/<?= (int)$poster['poster_id']; ?>"><button>Add Poster</button></a>
+<a href="/theater-app/admin/add_poster/<?= (int)$poster['poster_id']; ?>"><button>Add Poster</button></a>
 
-<a href="/theater-app/update_show/<?= (int)$poster['poster_id']; ?>"><button>Update Show</button></a>
+<a href="/theater-app/admin/update_show/<?= (int)$poster['poster_id']; ?>"><button>Update Show</button></a>
 <div class="card mb-4" style="max-width: 800px; margin: auto;">
     <img src="/theater-app/<?= htmlspecialchars($poster['poster_image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($poster['title']) ?>">
 

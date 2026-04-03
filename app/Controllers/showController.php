@@ -94,6 +94,10 @@ class ShowController extends BaseController
         $schedules = $this->showModel->getSchedulesByPosterId($show_id);
 
         $data = $request->getParsedBody();
+        var_dump($data);
+
+
+
 
         $title_fr = $data['title_fr'] ?? '';
         $title = $data['title'] ?? '';
@@ -113,12 +117,17 @@ class ShowController extends BaseController
         // }
 
 
-        if (empty($errors)) {
-            $this->showModel->updateShow($title_fr, $title, $duration, $genre, $language, $cast, $show_type, $is_active, $description, $description_fr, $show_id);
 
+        if (true) {
+            $this->showModel->updateShow($title_fr, $title, $duration, $genre, $language, $cast, $show_type, $is_active, $description, $description_fr, $poster['show_id']);
+            /*
             return $this->render($response, 'admin/detail.php', ['poster' => $poster, 'schedules' => $schedules]);
+            */
+            return $this->redirect($request, $response, 'show.index');
         }
+        return $this->redirect($request, $response, 'show.index', ['error' => $errors, 'show_id' => $show_id,]);
 
+        /*
         return $this->view->render(
             $response,
             'admin/update_show.php',
@@ -127,6 +136,7 @@ class ShowController extends BaseController
                 'show_id' => $show_id
             ]
         );
+        */
     }
 
     public function init_add_show(Request $request, Response $response): Response
@@ -158,11 +168,17 @@ class ShowController extends BaseController
 
         if (empty($errors)) {
             $this->showModel->addShow($title_fr, $title, $duration, $genre, $language, $cast, $show_type, $is_active, $description, $description_fr);
+            /*
 
-            $info = $this->showModel->getAllPosters();
+            $info =
+
+            $this->showModel->getAllPosters();
             return $this->render($response, 'admin/index.php', $info);
+            */
+            return $this->redirect($request, $response, 'show.index');
         }
 
+        /*
         return $this->view->render(
             $response,
             'admin/update_show.php',
@@ -170,5 +186,9 @@ class ShowController extends BaseController
                 'errors' => $errors
             ]
         );
+        */
+        return $this->redirect($request, $response, 'show.index', [
+            'errors' => $errors
+        ]);
     }
 }

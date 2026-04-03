@@ -8,7 +8,7 @@ $schedules = $data['schedules'];
 <div class="container mt-4">
     <h3 class="mb-4">Update Show</h3>
 
-    <form method="POST" action="/theater-app/update_show/<?= (int)$poster['poster_id']; ?>">
+    <form method="POST" action="/theater-app/admin/update_show/<?= (int)$poster['poster_id']; ?>">
 
         <div class="mb-3">
             <label class="form-label">French Title</label>
