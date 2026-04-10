@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+
+use App\Helpers\FlashMessage;
 use App\Domain\Models\showModel;
 use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -83,7 +85,8 @@ class ShowController extends BaseController
     {
         $id = (int)$args['id'];
         $poster = $this->showModel->getById($id);
-        $schedules = $this->showModel->getSchedulesByPosterId($id); // fetch poster data
+        $schedules = $this->showModel->getSchedulesByPosterId($id);
+
         return $this->render($response, 'admin/update_show.php', ['poster' => $poster,   'schedules' => $schedules]);
     }
 
@@ -99,6 +102,7 @@ class ShowController extends BaseController
 
 
 
+
         $title_fr = $data['title_fr'] ?? '';
         $title = $data['title'] ?? '';
         $duration = $data['duration'] ?? '';
@@ -110,22 +114,64 @@ class ShowController extends BaseController
         $description = $data['description'] ?? '';
         $description_fr = $data['description_fr'] ?? '';
 
-
         $errors = [];
+        if (empty($title_fr)) {
+            $errors[] = "French title is required.";
+        }
+        if (empty($title)) {
+            $errors[] = "Title is required.";
+        }
+        if (empty($duration)) {
+            $errors[] = "Duration is required.";
+        } elseif (!is_numeric($duration) || (int)$duration <= 0) {
+            $errors[] = "Duration must be a positive number.";
+        }
+        if (empty($genre)) {
+            $errors[] = "Genre is required.";
+        }
+        if (empty($language)) {
+            $errors[] = "Language is required.";
+        }
+        if (empty($show_type)) {
+            $errors[] = "Show type is required.";
+        }
+        if (empty($description)) {
+            $errors[] = "Description is required.";
+        }
+        if (empty($description_fr)) {
+            $errors[] = "French description is required.";
+        }
+
+
+
+
+
         // if (empty($poster_image)) {
         //     $errors[] = "Poster Image Required";
         // }
 
 
 
-        if (true) {
+        if (empty($errors)) {
             $this->showModel->updateShow($title_fr, $title, $duration, $genre, $language, $cast, $show_type, $is_active, $description, $description_fr, $poster['show_id']);
             /*
             return $this->render($response, 'admin/detail.php', ['poster' => $poster, 'schedules' => $schedules]);
+
             */
+            FlashMessage::success("This is a success message!");
+
+
+
             return $this->redirect($request, $response, 'show.index');
         }
-        return $this->redirect($request, $response, 'show.index', ['error' => $errors, 'show_id' => $show_id,]);
+        if (!empty($errors)) {
+
+            //return $this->redirect($request, $response, 'show.index');
+            FlashMessage::error(implode(', ', $errors));
+
+            return $this->redirect($request, $response, 'show.update', ['error' => $errors,  'id' => $show_id]);
+        }
+        return $this->redirect($request, $response, 'show.index');
 
         /*
         return $this->view->render(
@@ -161,6 +207,35 @@ class ShowController extends BaseController
 
 
         $errors = [];
+        if (empty($title_fr)) {
+            $errors[] = "French title is required.";
+        }
+        if (empty($title)) {
+            $errors[] = "Title is required.";
+        }
+        if (empty($duration)) {
+            $errors[] = "Duration is required.";
+        } elseif (!is_numeric($duration) || (int)$duration <= 0) {
+            $errors[] = "Duration must be a positive number.";
+        }
+        if (empty($genre)) {
+            $errors[] = "Genre is required.";
+        }
+        if (empty($language)) {
+            $errors[] = "Language is required.";
+        }
+        if (empty($show_type)) {
+            $errors[] = "Show type is required.";
+        }
+        if (empty($description)) {
+            $errors[] = "Description is required.";
+        }
+        if (empty($description_fr)) {
+            $errors[] = "French description is required.";
+        }
+
+
+
         // if (empty($poster_image)) {
         //     $errors[] = "Poster Image Required";
         // }
@@ -170,13 +245,13 @@ class ShowController extends BaseController
             $this->showModel->addShow($title_fr, $title, $duration, $genre, $language, $cast, $show_type, $is_active, $description, $description_fr);
             /*
 
-            $info =
-
+            $info
             $this->showModel->getAllPosters();
             return $this->render($response, 'admin/index.php', $info);
             */
             return $this->redirect($request, $response, 'show.index');
         }
+
 
         /*
         return $this->view->render(
@@ -186,9 +261,11 @@ class ShowController extends BaseController
                 'errors' => $errors
             ]
         );
-        */
-        return $this->redirect($request, $response, 'show.index', [
+        */ else if (!empty($errors))
+            FlashMessage::error("Please fill all the blocks");
+        return $this->redirect($request, $response, 'show.add', [
             'errors' => $errors
         ]);
+        return $this->redirect($request, $response, 'show.index');
     }
 }

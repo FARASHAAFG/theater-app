@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Middleware\ExceptionMiddleware;
 use Slim\App;
+use App\Middleware\SessionMiddleware;
 
 return function (App $app) {
     //TODO: Add your middleware here.
@@ -15,6 +16,6 @@ return function (App $app) {
     //* For more details, refer to Slim framework's documentation.
     // Add your middleware here.
     // Start the session at the application level.
-    //$app->add(SessionStartMiddleware::class);
+    $app->add(SessionMiddleware::class);
     $app->add(ExceptionMiddleware::class);
 };

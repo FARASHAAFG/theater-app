@@ -16,6 +16,9 @@ use App\Controllers\ShowController;
 
 
 return static function (Slim\App $app): void {
+
+
+
     $app->get('/', [HomeController::class, 'index'])
         ->setName('home.index');
     $app->group('/admin', function ($group) {
@@ -33,11 +36,11 @@ return static function (Slim\App $app): void {
 
         $group->get('/update_show/{id}', [ShowController::class, 'init_update_show']);
 
-        $group->post('/update_show/{id}', [ShowController::class, 'update_show']);
+        $group->post('/update_show/{id}', [ShowController::class, 'update_show'])->setName('show.update');
 
         $group->get('/add_show', [ShowController::class, 'init_add_show']);
 
-        $group->post('/add_show', [ShowController::class, 'add_show']);
+        $group->post('/add_show', [ShowController::class, 'add_show'])->setName('show.add');
     });
 
 

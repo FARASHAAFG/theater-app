@@ -1,6 +1,14 @@
 <?php
+
+use App\Helpers\FlashMessage;
+
 require_once __DIR__ . '/../common/header.php';
+
+
 ?>
+<div class="mb-4">
+    <?= App\Helpers\FlashMessage::render() ?>
+</div>
 
 <form method="POST" action="/theater-app/admin/add_show">
     <label for="title_fr">French Title:</label>
