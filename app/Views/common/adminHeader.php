@@ -52,13 +52,13 @@
                 <hr class="text-secondary my-0">
                 <ul class="nav flex-column px-2 mt-2">
                     <li class="nav-item">
-                        <a class="nav-link active" href="<?= APP_BASE_URL ?>/admin/dashboard">
+                        <a class="nav-link active" href="<?= APP_BASE_URL ?>/admin/show">
                             Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= APP_BASE_URL ?>/admin/products">
-                            Products
+                        <a class="nav-link" href="<?= APP_BASE_URL ?>/admin/show">
+                            Shows
                         </a>
                     </li>
                     <li class="nav-item">
@@ -67,8 +67,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= APP_BASE_URL ?>/admin/orders">
-                            Orders
+                        <a class="nav-link" href="<?= APP_BASE_URL ?>/admin/transactions">
+                            Transactions
                         </a>
                     </li>
                     <li class="nav-item">
@@ -76,6 +76,7 @@
                             Users
                         </a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="/theater-app/admin/add_show">
                             Add Show
