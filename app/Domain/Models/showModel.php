@@ -20,6 +20,18 @@ class showModel extends BaseModel
         return $this->selectAll(' SELECT * FROM posters JOIN shows ON posters.show_id = shows.show_id');
     }
 
+    public function getAllShows(): array
+    {
+        // Query to get ALL shows, even those without posters
+        $sql = "SELECT
+         s.show_id, s.title, s.title_fr, s.duration, s.genre, s.language, s.show_type, s.is_active, p.poster_id
+         FROM shows s
+         LEFT JOIN posters p
+         ON s.show_id = p.show_id";
+
+        return $this->selectAll($sql);
+    }
+
     public function getById(int $id): array|false
     {
         $sql = "

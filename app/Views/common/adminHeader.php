@@ -57,7 +57,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= APP_BASE_URL ?>/admin/show">
+                        <a class="nav-link" href="<?= APP_BASE_URL ?>/admin/posters">
+                            Posters
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= APP_BASE_URL ?>/admin/shows">
                             Shows
                         </a>
                     </li>

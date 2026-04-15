@@ -23,6 +23,12 @@ class ShowController extends BaseController
         $info = $this->showModel->getAllPosters();
         return $this->render($response, 'admin/index.php', $info);
     }
+
+    public function renderShows(Request $request, Response $response, array $args): Response
+    {
+        $shows = $this->showModel->getAllShows();
+        return $this->render($response, 'admin/shows.php', $shows);
+    }
     public function show(Request $request, Response $response, array $args): Response
     {
         $id = (int)$args['id']; // get the ID from URL

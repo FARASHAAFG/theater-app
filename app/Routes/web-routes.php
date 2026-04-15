@@ -21,9 +21,13 @@ return static function (Slim\App $app): void {
 
     $app->get('/', [HomeController::class, 'index'])
         ->setName('home.index');
+
+    //$app->get('/shows', [ShowController::class, 'renderShows']);
     $app->group('/admin', function ($group) {
-        $group->get('/show', [ShowController::class, 'index'])
-            ->setName('show.index');
+        $group->get('/posters', [ShowController::class, 'index'])
+            ->setName('posters.index');
+        $group->get('/shows', [ShowController::class, 'renderShows']);
+
 
         $group->get('/detail/{id}', [ShowController::class, 'show'])->setName('show.detail');
         $group->get('/show/delete/{id}', [ShowController::class, 'delete'])
