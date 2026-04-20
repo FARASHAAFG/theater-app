@@ -177,3 +177,12 @@ function getErrorName(int $error_no): string
 
     return $error_types[$error_no] ?? "UNKNOWN_ERROR";
 }
+
+function ynn($value)
+{
+    if ($value === null) return "None";
+    if ($value === 1 || $value === 0) {
+        return $value ? "Yes" : "No";
+    }
+    return $value;
+}

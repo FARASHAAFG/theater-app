@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/../common/header.php';
+
+require_once __DIR__ . '/../common/adminHeader.php';
 
 $poster = $data['poster'];
 $schedules = $data['schedules'];

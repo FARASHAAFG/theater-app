@@ -52,8 +52,14 @@
                 <hr class="text-secondary my-0">
                 <ul class="nav flex-column px-2 mt-2">
                     <li class="nav-item">
-                        <a class="nav-link active" href="<?= APP_BASE_URL ?>/admin/show">
+                        <a class="nav-link active" href="<?= APP_BASE_URL ?>/admin">
                             Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= APP_BASE_URL ?>/admin/shows">
+                            Shows
                         </a>
                     </li>
                     <li class="nav-item">
@@ -61,11 +67,7 @@
                             Posters
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= APP_BASE_URL ?>/admin/shows">
-                            Shows
-                        </a>
-                    </li>
+                    <!-- Not Done YET -->
                     <li class="nav-item">
                         <a class="nav-link" href="<?= APP_BASE_URL ?>/admin/categories">
                             Categories
@@ -79,12 +81,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="<?= APP_BASE_URL ?>/admin/users">
                             Users
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="/theater-app/admin/add_show">
-                            Add Show
                         </a>
                     </li>
 

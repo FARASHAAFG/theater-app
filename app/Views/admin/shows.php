@@ -13,6 +13,7 @@ $shows = $data;
 
 <div class="container mt-4">
     <h2>All Shows</h2>
+    <a class="btn btn-primary btn-lg mb-3" href="<?= APP_BASE_URL ?>/admin/add_show">Add New Show</a>
     <table class="table table-striped table-bordered table-dark">
         <thead>
             <tr>
@@ -25,6 +26,7 @@ $shows = $data;
                 <th>Type</th>
                 <th>Active</th>
                 <th>Poster?</th>
+                <th colspan="2">Actions</th>
             </tr>
         </thead>
 
@@ -36,14 +38,36 @@ $shows = $data;
                 <tr>
                     <td><?= hs($show["show_id"]); ?></td>
 
-                    <td><?= hs($show["title"]); ?></td>
+                    <td>
+                        <?= hs($show["title"]); ?>
+
+                    </td>
                     <td><?= hs($show["title_fr"]); ?></td>
-                    <td><?= hs($show["duration"]); ?></td>
+                    <td><?= hs($show["duration"]); ?> minutes</td>
                     <td><?= hs($show["genre"]); ?></td>
                     <td><?= hs($show["language"]); ?></td>
                     <td><?= hs($show["show_type"]); ?></td>
 
-                    <td><?= hs($show["is_active"]); ?></td>
+                    <td><?= hs(ynn($show["is_active"])); ?></td>
+
+                    <td>
+                        <?php if ($show["poster_id"]): ?>
+                            <span class="badge bg-success">
+                                <i class="bi bi-star-fill"></i> Has Poster
+                            </span>
+                        <?php else: ?>
+                            <span class="badge bg-danger">
+                                <i class="bi bi-star-fill"></i> No Poster
+                            </span>
+                        <?php endif; ?>
+                    </td>
+
+                    <td><a class="btn btn-primary"
+                            href="<?= APP_BASE_URL . '/admin/show_details/' . $show['show_id'] ?>">
+                            View Details
+                        </a>
+                    </td>
+
                     <td>
                         <!-- Adding and Updating poster logic NOT DONE -->
                         <!-- Takes in the show_id to the next page -->
@@ -54,7 +78,7 @@ $shows = $data;
                                 Change Poster
                             </a>
                         <?php else: ?>
-                            <a class="btn btn-primary"
+                            <a class="btn btn-warning"
                                 href="<?= APP_BASE_URL . '/admin/add_poster/' . $show['show_id'] ?>">
                                 Add Poster
                             </a>

@@ -23,8 +23,8 @@ class showModel extends BaseModel
     public function getAllShows(): array
     {
         // Query to get ALL shows, even those without posters
-        $sql = "SELECT
-         s.show_id, s.title, s.title_fr, s.duration, s.genre, s.language, s.show_type, s.is_active, p.poster_id
+        $sql = "SELECT s.*,
+         p.poster_id
          FROM shows s
          LEFT JOIN posters p
          ON s.show_id = p.show_id";
@@ -43,6 +43,17 @@ class showModel extends BaseModel
 
         return $this->selectOne($sql, ["id" => $id]);
     }
+
+    public function getByShowId(int $id): array|false
+    {
+        $sql = "
+        SELECT s.*, p.poster_id FROM shows s
+        LEFT JOIN posters p ON s.show_id = p.show_id
+        WHERE s.show_id = :id
+    ";
+
+        return $this->selectOne($sql, ["id" => $id]);
+    }
     //! If $posterId is actually the inputted show_id maybe change the variable name
     public function getSchedulesByPosterId(int $posterId): array
     {
@@ -56,6 +67,27 @@ class showModel extends BaseModel
         return $this->selectAll($sql, ['posterId' => $posterId]);
     }
 
+    public function getPosterByShowId(int $showId): array|false
+    {
+        $sql = "
+        SELECT *
+        FROM posters
+        WHERE show_id = :showId";
+
+        return $this->selectOne($sql, ['showId' => $showId]);
+    }
+
+    public function getSchedulesByShowId(int $showId): array
+    {
+        $sql = "
+        SELECT *
+        FROM showings
+        WHERE show_id = :showId
+        ORDER BY start_time ASC
+    ";
+
+        return $this->selectAll($sql, ['showId' => $showId]);
+    }
 
     public function deleteById(int $id): bool
     {

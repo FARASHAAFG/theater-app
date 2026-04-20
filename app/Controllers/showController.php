@@ -29,8 +29,24 @@ class ShowController extends BaseController
         $shows = $this->showModel->getAllShows();
         return $this->render($response, 'admin/shows.php', $shows);
     }
+
+    //* This the correct one, since it shows correct details and schedules, the other show function is the one that is wrong and needs to be fixed or removed
+    public function renderShowDetails(Request $request, Response $response, array $args): Response
+    {
+
+        //this id is the actual show id
+        $id = (int)$args['id']; // get the ID from URL
+        $show = $this->showModel->getByShowId($id);
+        $poster = $this->showModel->getPosterByShowId($id);
+        $schedules = $this->showModel->getSchedulesByShowId($id); // fetch poster data
+        return $this->render($response, 'admin/show_details.php', ['show' => $show, 'poster' => $poster, 'schedules' => $schedules]);
+    }
+
+    //! NEED TO FIX!! DOESNT ACC SHOW THE CORRECT DETAILS
+    //! IT TAKES IN THE POSTER ID RATHER THAN THE SHOW ID SO IT SHOWS THE WRONG SCHEDULES...
     public function show(Request $request, Response $response, array $args): Response
     {
+        // this is the poster id...
         $id = (int)$args['id']; // get the ID from URL
         $poster = $this->showModel->getById($id);
         $schedules = $this->showModel->getSchedulesByPosterId($id); // fetch poster data

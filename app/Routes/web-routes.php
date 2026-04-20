@@ -10,6 +10,7 @@ use App\Controllers\HomeController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Controllers\ShowController;
+use App\Controllers\AdminDashboardController;
 
 
 
@@ -24,6 +25,9 @@ return static function (Slim\App $app): void {
 
     //$app->get('/shows', [ShowController::class, 'renderShows']);
     $app->group('/admin', function ($group) {
+
+        $group->get('', [AdminDashboardController::class, 'dashboard'])
+            ->setName('admin.dashboard');
         $group->get('/posters', [ShowController::class, 'index'])
             ->setName('posters.index');
         $group->get('/shows', [ShowController::class, 'renderShows']);
@@ -33,6 +37,7 @@ return static function (Slim\App $app): void {
         $group->get('/show/delete/{id}', [ShowController::class, 'delete'])
             ->setName('show.delete');
 
+        $group->get('/show_details/{id}', [ShowController::class, 'renderShowDetails']);
 
         $group->get('/add_poster/{id}', [ShowController::class, 'init_add_poster']);
 

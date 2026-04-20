@@ -12,17 +12,17 @@ $schedules = $data['schedules']; // array of schedules for this poster
     <img src="/theater-app/<?= htmlspecialchars($poster['poster_image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($poster['title']) ?>">
 
     <div class="card-body">
-        <h2 class="card-title"><?= htmlspecialchars($poster['show_name']); ?></h2>
-        <p class="card-text"><?= htmlspecialchars($poster['description']); ?></p>
+        <h2 class="card-title"><?= hs($poster['show_name']); ?></h2>
+        <p class="card-text"><?= hs($poster['description']); ?></p>
     </div>
 
     <ul class="list-group list-group-flush">
         <li class="list-group-item"><strong>Duration:</strong> <?= $poster['duration']; ?> minutes</li>
-        <li class="list-group-item"><strong>Genre:</strong> <?= htmlspecialchars($poster['genre']); ?></li>
-        <li class="list-group-item"><strong>Language:</strong> <?= htmlspecialchars($poster['language']); ?></li>
-        <li class="list-group-item"><strong>Cast:</strong> <?= htmlspecialchars($poster['cast']); ?></li>
-        <li class="list-group-item"><strong>Show Type:</strong> <?= htmlspecialchars($poster['show_type']); ?></li>
-        <li class="list-group-item"><strong>Active:</strong> <?= $poster['is_active'] ? 'Yes' : 'No'; ?></li>
+        <li class="list-group-item"><strong>Genre:</strong> <?= hs($poster['genre']); ?></li>
+        <li class="list-group-item"><strong>Language:</strong> <?= hs($poster['language']); ?></li>
+        <li class="list-group-item"><strong>Cast:</strong> <?= hs($poster['cast']); ?></li>
+        <li class="list-group-item"><strong>Show Type:</strong> <?= hs($poster['show_type']); ?></li>
+        <li class="list-group-item"><strong>Active:</strong> <?= hs(ynn($poster['is_active'])); ?></li>
     </ul>
 </div>
 
