@@ -105,18 +105,24 @@ class ShowController extends BaseController
     }
     public function init_update_show(Request $request, Response $response, array $args): Response
     {
-        $id = (int)$args['id'];
-        $poster = $this->showModel->getById($id);
-        $schedules = $this->showModel->getSchedulesByPosterId($id);
+        $id = (int)$args['id']; // get the ID from URL
+        $show = $this->showModel->getByShowId($id);
+        $poster = $this->showModel->getPosterByShowId($id);
+        $schedules = $this->showModel->getSchedulesByShowId($id);
 
-        return $this->render($response, 'admin/update_show.php', ['poster' => $poster,   'schedules' => $schedules]);
+
+        return $this->render($response, 'admin/update_show.php', ['show' => $show, 'poster' => $poster,   'schedules' => $schedules]);
     }
 
     public function update_show(Request $request, Response $response, array $args): Response
     {
-        $show_id = (int)$args['id'];
-        $poster = $this->showModel->getById($show_id);
-        $schedules = $this->showModel->getSchedulesByPosterId($show_id);
+        //this id is the actual show id
+        $id = (int)$args['id']; // get the ID from URL
+        $show = $this->showModel->getByShowId($id);
+        $poster = $this->showModel->getPosterByShowId($id);
+        $schedules = $this->showModel->getSchedulesByShowId($id);
+
+
 
         $data = $request->getParsedBody();
         //var_dump($data);
@@ -175,7 +181,7 @@ class ShowController extends BaseController
 
 
         if (empty($errors)) {
-            $this->showModel->updateShow($title_fr, $title, $duration, $genre, $language, $cast, $show_type, $is_active, $description, $description_fr, $poster['show_id']);
+            $this->showModel->updateShow($title_fr, $title, $duration, $genre, $language, $cast, $show_type, $is_active, $description, $description_fr, $show['show_id']);
             /*
             return $this->render($response, 'admin/detail.php', ['poster' => $poster, 'schedules' => $schedules]);
 
@@ -191,7 +197,7 @@ class ShowController extends BaseController
             //return $this->redirect($request, $response, 'show.index');
             FlashMessage::error(implode(', ', $errors));
 
-            return $this->redirect($request, $response, 'show.update', ['error' => $errors,  'id' => $show_id]);
+            return $this->redirect($request, $response, 'show.update', ['error' => $errors,  'id' => $id]);
         }
         return $this->redirect($request, $response, 'show.index');
 
