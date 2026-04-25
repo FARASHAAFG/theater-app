@@ -3,6 +3,10 @@
 namespace App\Views\admin;
 
 require_once __DIR__ . '/../common/adminHeader.php';
+echo $_SERVER['DOCUMENT_ROOT'];
+
+
+
 
 $shows = $data;
 
@@ -26,7 +30,9 @@ $shows = $data;
                 <th>Type</th>
                 <th>Active</th>
                 <th>Poster?</th>
-                <th colspan="2">Actions</th>
+
+                <th colspan="3">Actions</th>
+
             </tr>
         </thead>
 
@@ -74,15 +80,21 @@ $shows = $data;
 
                         <?php if ($show["poster_id"]): ?>
                             <a class="btn btn-info"
-                                href="<?= APP_BASE_URL . '/admin/add_poster/' . $show['show_id'] ?>">
+                                href="<?= APP_BASE_URL . '/admin/upload/' . $show['show_id']  ?>">
                                 Change Poster
                             </a>
                         <?php else: ?>
                             <a class="btn btn-warning"
-                                href="<?= APP_BASE_URL . '/admin/add_poster/' . $show['show_id'] ?>">
+                                href="<?= APP_BASE_URL . '/admin/upload/' . $show['show_id']  ?>">
                                 Add Poster
                             </a>
+
                         <?php endif; ?>
+
+                    <td>
+
+                        <a href="/theater-app/admin/show/delete/<?= (int)$show['show_id']; ?>" class="btn btn-danger btn-s">Delete</a>
+
                     </td>
 
                 </tr>

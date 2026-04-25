@@ -7,6 +7,7 @@ declare(strict_types=1);
  */
 
 use App\Controllers\HomeController;
+use App\Controllers\UploadController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Controllers\ShowController;
@@ -25,12 +26,25 @@ return static function (Slim\App $app): void {
 
     //$app->get('/shows', [ShowController::class, 'renderShows']);
     $app->group('/admin', function ($group) {
+        //       - Named route: 'upload.index'
+        $group->get('/upload/{id}', [UploadController::class, 'index'])
+            ->setName('upload.index');
+
+
+
+        // TODO: Add POST route for /upload
+        //       - Controller: UploadController::class, 'upload'
+        //       - Named route: 'upload.process'
+
+        $group->post('/upload/{id}', [UploadController::class, 'upload'])
+            ->setName('upload.process');
+
 
         $group->get('', [AdminDashboardController::class, 'dashboard'])
             ->setName('admin.dashboard');
         $group->get('/posters', [ShowController::class, 'index'])
             ->setName('posters.index');
-        $group->get('/shows', [ShowController::class, 'renderShows']);
+        $group->get('/shows', [ShowController::class, 'renderShows'])->setName('show.index');
 
 
         $group->get('/detail/{id}', [ShowController::class, 'show'])->setName('show.detail');

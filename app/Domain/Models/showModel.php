@@ -89,10 +89,31 @@ class showModel extends BaseModel
         return $this->selectAll($sql, ['showId' => $showId]);
     }
 
-    public function deleteById(int $id): bool
+    public function deletePosterById(int $id): bool
     {
-        $sql = "DELETE FROM posters WHERE poster_id = :id";
+        $sql = "DELETE FROM posters WHERE show_id = :id";
         return $this->execute($sql, ['id' => $id]);
+    }
+    public function deleteShowById(int $id): bool
+    {
+        // 1. Delete from showings first (child table)
+        // Disable foreign key checks temporarily
+        $this->execute("SET FOREIGN_KEY_CHECKS = 0", []);
+
+        // Delete all related records
+        $sql = "DELETE FROM showings WHERE show_id = :id";
+        $this->execute($sql, ['id' => $id]);
+
+        $sql = "DELETE FROM posters WHERE show_id = :id";
+        $this->execute($sql, ['id' => $id]);
+
+        $sql = "DELETE FROM shows WHERE show_id = :id";
+        $this->execute($sql, ['id' => $id]);
+
+        // Re-enable foreign key checks
+        $this->execute("SET FOREIGN_KEY_CHECKS = 1", []);
+
+        return true;
     }
 
     public function createPoster(int $show_id, bool $is_used, $poster_image): bool

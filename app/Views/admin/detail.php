@@ -9,7 +9,7 @@ $schedules = $data['schedules']; // array of schedules for this poster
 
 <a class="btn btn-primary" href="/theater-app/admin/update_show/<?= (int)$poster['poster_id']; ?>">Update Show</a>
 <div class="card mb-4" style="max-width: 800px; margin: auto;">
-    <img src="/theater-app/<?= htmlspecialchars($poster['poster_image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($poster['title']) ?>">
+    <img src="/theater-app/upload/images<?= htmlspecialchars($poster['poster_image']) ?>" class="card-img-top" alt="<?= htmlspecialchars($poster['title']) ?>">
 
     <div class="card-body">
         <h2 class="card-title"><?= hs($poster['show_name']); ?></h2>

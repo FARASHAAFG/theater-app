@@ -56,7 +56,7 @@ class ShowController extends BaseController
     public function delete(Request $request, Response $response, array $args): Response
     {
         $id = (int)$args['id'];
-        $this->showModel->deleteById($id);
+        $this->showModel->deleteshowById($id);
 
         // Redirect back to list page after deletion
         return $this->redirect($request, $response, 'show.index');
@@ -119,7 +119,7 @@ class ShowController extends BaseController
         $schedules = $this->showModel->getSchedulesByPosterId($show_id);
 
         $data = $request->getParsedBody();
-        var_dump($data);
+        //var_dump($data);
 
 
 
@@ -184,7 +184,7 @@ class ShowController extends BaseController
 
 
 
-            return $this->redirect($request, $response, 'show.index');
+            return $this->redirect($request, $response, 'show.index', ['id' => $show_id]);
         }
         if (!empty($errors)) {
 

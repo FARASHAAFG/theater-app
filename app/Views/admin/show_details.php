@@ -19,7 +19,7 @@ $schedules = $data['schedules'] ?? [];
 
 <div class="card mb-4" style="max-width: 800px; margin: auto;">
     <?php if (!empty($poster['poster_image'])): ?>
-        <img src="/theater-app/<?= htmlspecialchars($poster['poster_image']) ?>"
+        <img src="/theater-app/uploads/images/<?= htmlspecialchars($poster['poster_image']) ?>"
             class="card-img-top"
             alt="<?= htmlspecialchars($show['title']) ?>">
     <?php else: ?>

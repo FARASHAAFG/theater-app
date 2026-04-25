@@ -38,6 +38,15 @@ class ViewHelper
     {
         require_once APP_VIEWS_PATH . '/common/footer.php';
     }
+    public static function loadAdminHeader(string $page_title): void
+    {
+        $page_title = $page_title ?? 'Admin Panel';
+        require_once APP_VIEWS_PATH . '/admin/adminHeader.php';
+    }
+    public static function loadAdminFooter(): void
+    {
+        require_once APP_VIEWS_PATH . '/admin/adminFooter.php';
+    }
 
     /**
      * Generates HTML option elements for a select dropdown with secure output.
