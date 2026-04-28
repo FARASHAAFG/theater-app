@@ -36,7 +36,7 @@ $posters = $data;
 
                 <div class="col-md-4 mb-4">
                     <div class="card h-100" style="width: 100%;">
-                        <img src="/theater-app/<?= htmlspecialchars($poster['poster_image']) ?>" class=" card-img-top" alt="...">
+                        <img src="/theater-app/uploads/images/<?= htmlspecialchars($poster['poster_image']) ?>">
                         <div class="card-body">
                             <h5 class="card-title"><?= $poster['title']; ?></h5>
                         </div>

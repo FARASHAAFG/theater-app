@@ -51,15 +51,7 @@ class UploadController extends BaseController
         // TODO: Extract 'myfile' from the array
         $id = (int)$args['id'];
         $files = $request->getUploadedFiles();
-
-
-
         $uploaded_files = $files['myfile'];
-
-
-
-
-
 
         // TODO: Create $config array with:
         //       - 'directory' => APP_BASE_DIR_PATH . '/public/uploads/images'
@@ -75,6 +67,7 @@ class UploadController extends BaseController
 
         // TODO: Call FileUploadHelper::upload() with uploaded file and config
         $result = FileUploadHelper::upload($uploaded_files, $config);
+
 
         // TODO: Check if result is successful using isSuccess()
         // If successful:
@@ -106,17 +99,24 @@ class UploadController extends BaseController
             // 3. save session
             SessionManager::set('uploaded_files', $session_files);
 
+            return $this->redirect($request, $response, 'upload.index', [
+                'id' => $id
+            ]);
+
             //FlashMessage::success($result->getMessage());
         } else {
             // afficher erreurs
             $errors = $result->getErrors();
-            FlashMessage::error(implode(", ", $errors));
+            FlashMessage::error("error");
+
+            //FlashMessage::error(implode(", ", $errors));
         }
 
 
-        // TODO: Redirect back to 'upload.index'
         return $this->redirect($request, $response, 'upload.index', [
             'id' => $id
         ]);
+        // TODO: Redirect back to 'upload.index'
+
     }
 }

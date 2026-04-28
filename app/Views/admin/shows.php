@@ -14,6 +14,8 @@ $shows = $data;
 
 ?>
 
+<button type="button" class="btn btn-primary">Primary</button>
+
 
 <div class="container mt-4">
     <h2>All Shows</h2>
