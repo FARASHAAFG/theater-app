@@ -2,8 +2,8 @@
 require_once __DIR__ . '/../common/adminHeader.php';
 
 // Poster/show data
-$poster = $data['poster'];
-$schedules = $data['schedules']; // array of schedules for this poster
+$poster = $data['poster'] ?? [];
+$schedules = $data['schedules'] ?? []; // array of schedules for this poster
 ?>
 <a class="btn btn-primary" href="/theater-app/admin/add_poster/<?= (int)$poster['poster_id']; ?>">Add Poster</a>
 

@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../common/adminHeader.php';
 // Page with form to add new poster.
 
-$poster = $data['poster'];
+$poster = $data['poster'] ?? [];
 ?>
 <div class="container mt-4">
     <div class="mb-4">

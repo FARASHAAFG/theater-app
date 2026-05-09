@@ -67,7 +67,34 @@ class showModel extends BaseModel
         return $this->selectAll($sql, ['posterId' => $posterId]);
     }
 
+    public function getBookingById(int $BookingId): array|false
+    {
+        $sql = "
+        SELECT *
+        FROM posters
+        WHERE show_id = :showId";
+
+        return $this->selectOne($sql, ['showId' => $BookingId]);
+    }
+
     public function getPosterByShowId(int $showId): array|false
+    {
+        $sql = "
+        SELECT *
+        FROM posters
+        WHERE show_id = :showId";
+
+        return $this->selectOne($sql, ['showId' => $showId]);
+    }
+    public function getSeatsByRow($row_label)
+    {
+        $sql = ("SELECT * FROM seats WHERE row_label = :row_label
+        ");
+
+
+        return $this->selectAll($sql, ['row_label' => $row_label]);
+    }
+    public function getSeats(int $showId): array|false
     {
         $sql = "
         SELECT *
@@ -87,6 +114,17 @@ class showModel extends BaseModel
     ";
 
         return $this->selectAll($sql, ['showId' => $showId]);
+    }
+    public function getSchedulesByShowingId(int $showingId): array
+    {
+        $sql = "
+        SELECT *
+        FROM showings
+        WHERE showing_id = :showId
+        ORDER BY start_time ASC
+    ";
+
+        return $this->selectAll($sql, ['showId' => $showingId]);
     }
 
     public function deletePosterById(int $id): bool

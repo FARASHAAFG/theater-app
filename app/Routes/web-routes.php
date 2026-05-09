@@ -8,10 +8,12 @@ declare(strict_types=1);
 
 use App\Controllers\HomeController;
 use App\Controllers\UploadController;
+use App\Controllers\userController;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Controllers\ShowController;
 use App\Controllers\AdminDashboardController;
+use App\Controllers\BookingController;
 
 
 
@@ -21,8 +23,37 @@ return static function (Slim\App $app): void {
 
 
 
+    $app->get('/booking', [BookingController::class, 'index'])
+        ->setName('booking.index');
+
+    $app->get('/booking/add', [BookingController::class, 'add'])
+        ->setName('booking.add');
+
+
+    $app->get('/booking/update', [BookingController::class, 'update'])
+        ->setName('booking.update');
+
+    $app->get('/booking/remove', [BookingController::class, 'remove'])
+        ->setName('booking.remove');
+    $app->get('/booking/clear', [BookingController::class, 'clear'])
+        ->setName('booking.clear');
+
+
     $app->get('/', [HomeController::class, 'index'])
         ->setName('home.index');
+
+    $app->group('/user', function ($group) {
+        $group->get('/shows', [userController::class, 'renderUserShows'])
+            ->setName('posters.index');
+        $group->get('/show_details/{id}', [userController::class, 'renderShowDetails']);
+        $group->get('/booking/{id}', [BookingController::class, 'getScheduleForBooking'])->setName('schedule.select');
+
+
+
+        $group->post('/seats', [BookingController::class, 'seatSelect'])->setName('seat.select');
+
+        $group->post('/booking', [BookingController::class, 'renderSeat'])->setName('seat.book')->setName('booking');
+    });
 
     //$app->get('/shows', [ShowController::class, 'renderShows']);
     $app->group('/admin', function ($group) {

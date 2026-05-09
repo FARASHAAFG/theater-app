@@ -4,9 +4,10 @@ use App\Helpers\ViewHelper;
 
 require_once __DIR__ . '/../common/adminHeader.php';
 
-$id = (int) $id;
+$id = (int)$id;
 
-var_dump($poster);
+//var_dump($poster);
+
 
 
 

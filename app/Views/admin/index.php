@@ -6,7 +6,8 @@ use App\Helpers\FlashMessage;
 require_once __DIR__ . '/../common/adminHeader.php';
 
 
-$posters = $data;
+$posters = $data ?? [];
+
 
 
 ?>

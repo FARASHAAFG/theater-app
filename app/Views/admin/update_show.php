@@ -3,9 +3,9 @@
 require_once __DIR__ . '/../common/adminHeader.php';
 
 
-$show = $data['show'];
-$poster = $data['poster'];
-$schedules = $data['schedules'];
+$show = $data['show'] ?? [];
+$poster = $data['poster'] ?? [];
+$schedules = $data['schedules'] ?? [];
 ?>
 
 <div class="container mt-4">

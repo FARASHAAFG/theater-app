@@ -24,6 +24,9 @@ class ShowController extends BaseController
         return $this->render($response, 'admin/index.php', $info);
     }
 
+
+
+
     public function renderShows(Request $request, Response $response, array $args): Response
     {
         $shows = $this->showModel->getAllShows();
@@ -33,6 +36,7 @@ class ShowController extends BaseController
     //* This the correct one, since it shows correct details and schedules, the other show function is the one that is wrong and needs to be fixed or removed
     public function renderShowDetails(Request $request, Response $response, array $args): Response
     {
+
 
         //this id is the actual show id
         $id = (int)$args['id']; // get the ID from URL
@@ -190,7 +194,7 @@ class ShowController extends BaseController
 
 
 
-            return $this->redirect($request, $response, 'show.index', ['id' => $show_id]);
+            return $this->redirect($request, $response, 'show.index', ['id' => $show['show_id']]);
         }
         if (!empty($errors)) {
 

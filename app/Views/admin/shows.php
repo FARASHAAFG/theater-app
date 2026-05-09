@@ -8,7 +8,7 @@ echo $_SERVER['DOCUMENT_ROOT'];
 
 
 
-$shows = $data;
+$shows = $data ?? [];
 
 //dd($shows);
 
