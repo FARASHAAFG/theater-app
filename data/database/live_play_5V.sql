@@ -313,7 +313,7 @@ CREATE TABLE `users` (
 
 --
 -- Stand-in structure for view `v_available_seats`
--- (See below for the actual view)
+-- See below for the actual view
 --
 CREATE TABLE `v_available_seats` (
 );
