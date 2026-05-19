@@ -13,8 +13,10 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Controllers\ShowController;
 use App\Controllers\AdminDashboardController;
+use App\Controllers\AuthController;
 use App\Controllers\BookingController;
-
+use App\Middleware\AuthMiddleware;
+use App\Middleware\AdminAuthMiddleware;
 
 
 
@@ -68,6 +70,29 @@ return static function (Slim\App $app): void {
         return $response->withHeader('Location', $referer)->withStatus(302);
     });
 
+    //* Register & Login Routes
+    $app->get('/register', [AuthController::class, 'register'])
+        ->setName('auth.register');
+    $app->post('/register', [AuthController::class, 'store']);
+
+    $app->get('/login', [AuthController::class, 'login'])
+        ->setName('auth.login');
+    $app->post('/login', [AuthController::class, 'authenticate']);
+    $app->get('/logout', [AuthController::class, 'logout'])
+        ->setName('auth.logout');
+
+    $app->get('/dashboard', [AuthController::class, 'dashboard'])
+        ->setName('user.dashboard')
+        ->add(AuthMiddleware::class);
+
+    //! -------------------------- //
+    // TODO: Review these routes
+    /*$app->group('/checkout', function ($group) {
+        $group->get('', [Book::class, 'checkout']);
+        $group->post('', [CartController::class, 'processCheckout']);
+    })->add(AuthMiddleware::class);*/
+    //! -------------------------- //
+
     //$app->get('/shows', [ShowController::class, 'renderShows']);
     $app->group('/admin', function ($group) {
         //       - Named route: 'upload.index'
@@ -108,7 +133,10 @@ return static function (Slim\App $app): void {
         $group->get('/add_show', [ShowController::class, 'init_add_show']);
 
         $group->post('/add_show', [ShowController::class, 'add_show'])->setName('show.add');
-    });
+
+        //* Auth
+        $group->get('/dashboard', [AdminDashboardController::class, 'dashboard'])->setName('admin.dashboard');
+    })->add(AdminAuthMiddleware::class);
 
 
 
