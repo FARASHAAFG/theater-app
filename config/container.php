@@ -18,8 +18,25 @@ use Slim\Psr7\Factory\ServerRequestFactory;
 use Slim\Psr7\Factory\StreamFactory;
 use Slim\Psr7\Factory\UriFactory;
 use Slim\Views\PhpRenderer;
+use App\Helpers\TranslationHelper;
 
 $definitions = [
+    TranslationHelper::class => function (ContainerInterface $container): TranslationHelper {
+        $helper = new TranslationHelper(
+            langPath: APP_LANG_DIR,
+            defaultLocale: 'en',
+            availableLocales: ['en', 'fr']
+        );
+
+        $locale = $_SESSION['locale'] ?? $_COOKIE['locale'] ?? 'en';
+
+        if ($helper->isLocaleAvailable($locale)) {
+            $helper->setLocale($locale);
+        }
+
+        return $helper;
+    },
+
     AppSettings::class => function () {
         return new AppSettings(
             require_once __DIR__ . '/settings.php'
@@ -49,6 +66,16 @@ $definitions = [
         $db_config = $container->get(AppSettings::class)->get('db');
         return new PDOService($db_config);
     },
+    PhpRenderer::class => function (ContainerInterface $container): PhpRenderer {
+        $renderer = new PhpRenderer(
+            templatePath: APP_VIEWS_PATH,
+            attributes: [
+                'translator' => $container->get(TranslationHelper::class)
+            ]
+        );
+        return $renderer;
+    },
+
 
     // HTTP factories
     ResponseFactoryInterface::class => fn() => new ResponseFactory(),

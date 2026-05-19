@@ -8,8 +8,9 @@ require_once __DIR__ . '/../common/header.php';
 
 $posters = $data ?? [];
 
-
-
+/** @var \App\Helpers\TranslationHelper $translator */
+echo $translator->trans('home.welcome');   
+//echo $translator->trans('nav.home');
 
 ?>
 <div class="mb-4">

@@ -1,0 +1,12 @@
+{
+    "nav.home": "Accueil",
+    "nav.products": "Produits",
+    "nav.cart": "Panier",
+    "home.welcome": "hello this is english file direction",
+    "home.featured_products": "Produits en vedette",
+    "common.save": "Enregistrer",
+    "common.cancel": "Annuler",
+    "common.delete": "Supprimer",
+    "errors.404.title": "404 - Page non trouvée",
+    "errors.404.message": "Oups ! La page que vous recherchez n'existe pas."
+}

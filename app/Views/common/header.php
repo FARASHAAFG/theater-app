@@ -58,8 +58,22 @@
                 <li class="nav-item">
                     <a class="nav-link" href="<?= APP_BASE_URL ?>/tickets">My Tickets</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/<?= APP_ROOT_DIR_NAME ?>/language/en">EN</a>
+
+                </li>
+                <li class="nav-item">
+
+                    <a class="nav-link" href="/<?= APP_ROOT_DIR_NAME ?>/language/fr">FR</a>
+                </li>
+                <div class="btn-group" role="group" aria-label="Basic example">
+
+
+
+                </div>
 
             </ul>
+
 
             <!-- Right side -->
             <div class="d-flex align-items-center gap-3">
@@ -74,6 +88,17 @@
                         <?= $bookingCount ?? 0 ?>
                     </span>
                 </a>
+                <li class="nav-item">
+
+
+                </li>
+                <li class="nav-item">
+
+
+                </li>
+
+
+
 
                 <!-- USER INFO -->
 

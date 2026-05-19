@@ -54,6 +54,19 @@ return static function (Slim\App $app): void {
 
         $group->post('/booking', [BookingController::class, 'renderSeat'])->setName('seat.book')->setName('booking');
     });
+    $app->get('/language/{locale}', function ($request, $response, $args) {
+        $locale = $args['locale'];
+
+        $allowedLocales = ['en', 'fr'];
+        if (in_array($locale, $allowedLocales)) {
+            $_SESSION['locale'] = $locale;
+            setcookie('locale', $locale, time() + (30 * 24 * 60 * 60), '/');
+        }
+
+        // Redirect back to previous page
+        $referer = $request->getHeaderLine('HTTP_REFERER') ?: '/';
+        return $response->withHeader('Location', $referer)->withStatus(302);
+    });
 
     //$app->get('/shows', [ShowController::class, 'renderShows']);
     $app->group('/admin', function ($group) {
