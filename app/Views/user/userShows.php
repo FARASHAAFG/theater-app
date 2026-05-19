@@ -24,8 +24,7 @@ $posters = $data ?? [];
 
 
 <div class="container mt-4">
-    <h2 class="modal-header">All Posters</h2>
-    <br>
+    <h1 class="modal-header">Shows</h1>
     <!-- Added a button to add new posters, instead of it being in the admin header -->
 
 

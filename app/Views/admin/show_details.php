@@ -10,6 +10,8 @@ require_once __DIR__ . '/../common/adminHeader.php';
 $show = $data['show'] ?? [];
 $poster = $data['poster'] ?? null;
 $schedules = $data['schedules'] ?? [];
+$reviews = $data['reviews'] ?? [];
+$ratingData = $data['ratingData'] ?? [];
 ?>
 
 <div class="text-center mb-4">
@@ -67,6 +69,75 @@ $schedules = $data['schedules'] ?? [];
         <?php endforeach; ?>
     </div>
 <?php endif; ?>
+
+<hr class="my-5">
+
+<div style="max-width: 900px; margin:auto;">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Customer Reviews</h3>
+
+        <?php if (!empty($ratingData['average_rating'])): ?>
+            <div class="text-end">
+                <div class="fw-bold text-warning fs-5">
+                    ★ <?= number_format($ratingData['average_rating'], 1); ?>/5
+                </div>
+
+                <small class="text-muted">
+                    <?= (int)$ratingData['total_reviews']; ?> review(s)
+                </small>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <?php if (empty($reviews)): ?>
+
+        <div class="alert alert-light border text-center">
+            No reviews available for this show yet.
+        </div>
+
+    <?php else: ?>
+
+        <div class="d-flex flex-column gap-3">
+
+            <?php foreach ($reviews as $review): ?>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+
+                            <div>
+                                <strong>
+                                    <?= hs($review['username'] ?? 'Anonymous'); ?>
+                                </strong>
+                            </div>
+
+                            <div class="text-warning fw-bold">
+                                <?= str_repeat('★', (int)$review['rating']); ?>
+                                <?= str_repeat('☆', 5 - (int)$review['rating']); ?>
+                            </div>
+
+                        </div>
+
+                        <p class="mb-2 text-muted">
+                            <?= hs($review['comment']); ?>
+                        </p>
+
+                        <small class="text-secondary">
+                            <?= date('F j, Y - H:i', strtotime($review['created_at'])); ?>
+                        </small>
+
+                    </div>
+                </div>
+
+            <?php endforeach; ?>
+
+        </div>
+
+    <?php endif; ?>
+
+</div>
 
 <?php
 require_once __DIR__ . '/../common/footer.php';

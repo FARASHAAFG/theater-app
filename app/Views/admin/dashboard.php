@@ -5,7 +5,7 @@ use App\Helpers\ViewHelper;
 require_once __DIR__ . '/../common/adminHeader.php';
 $data = $data ?? [];
 ?>
-
+<?= App\Helpers\FlashMessage::render() ?>
 <!-- Statistics Cards -->
 <div class="row mb-4">
     <div class="col-xl-3 col-md-6 mb-3">

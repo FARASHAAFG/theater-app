@@ -5,13 +5,14 @@ namespace App\Controllers;
 
 use App\Helpers\FlashMessage;
 use App\Domain\Models\showModel;
+use App\Domain\Models\ReviewsModel;
 use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class ShowController extends BaseController
 {
-    public function __construct(Container $container, private showModel $showModel)
+    public function __construct(Container $container, private showModel $showModel, private ReviewsModel $reviewsModel)
     {
         parent::__construct($container);
     }
@@ -43,11 +44,13 @@ class ShowController extends BaseController
         $show = $this->showModel->getByShowId($id);
         $poster = $this->showModel->getPosterByShowId($id);
         $schedules = $this->showModel->getSchedulesByShowId($id); // fetch poster data
-        return $this->render($response, 'admin/show_details.php', ['show' => $show, 'poster' => $poster, 'schedules' => $schedules]);
+        $reviews = $this->reviewsModel->getReviewsByShowId($id);
+
+        $ratingData = $this->reviewsModel->getAverageRating($id);
+        return $this->render($response, 'admin/show_details.php', ['show' => $show, 'poster' => $poster, 'schedules' => $schedules, 'reviews' => $reviews, 'ratingData' => $ratingData]);
     }
 
-    //! NEED TO FIX!! DOESNT ACC SHOW THE CORRECT DETAILS
-    //! IT TAKES IN THE POSTER ID RATHER THAN THE SHOW ID SO IT SHOWS THE WRONG SCHEDULES...
+
     public function show(Request $request, Response $response, array $args): Response
     {
         // this is the poster id...
