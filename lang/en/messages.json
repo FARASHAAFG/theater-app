@@ -154,6 +154,7 @@
     "admin.show.description_fr": "Description (French)",
     "admin.show.no_description": "No description provided.",
     "admin.show.cast": "Cast",
+    "user.dashboard": "dashboard",
     "admin.show.show_type": "Show type",
     "admin.show.active": "Active",
     "admin.show.schedules": "Schedules",
