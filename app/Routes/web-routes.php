@@ -161,6 +161,9 @@ return static function (Slim\App $app): void {
         $group->get('/posters', [ShowController::class, 'index'])
             ->setName('posters.index');
 
+        $group->get('/transactions', [BookingController::class, 'renderTransactionsPage'])
+        ->setName('transactions.index');
+
         $group->get('/shows', [ShowController::class, 'renderShows'])->setName('show.index');
 
         $group->get('/detail/{id}', [ShowController::class, 'show'])->setName('show.detail');

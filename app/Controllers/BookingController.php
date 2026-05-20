@@ -19,9 +19,9 @@ class BookingController extends BaseController
      * Constructor for BookingController
      * @param Container $container
      * @param showModel $showModel
-     * @param bookingModel $booking_model
+     * @param bookingModel $bookingModel
      */
-    public function __construct(Container $container, private showModel $showModel, private bookingModel $booking_model)
+    public function __construct(Container $container, private showModel $showModel, private bookingModel $bookingModel)
     {
         parent::__construct($container);
     }
@@ -56,7 +56,7 @@ class BookingController extends BaseController
         $selectedSeats = array_values(array_map('intval', $selectedSeats));
         $showingRow = $showing[0];
 
-        $this->booking_model->createBooking(
+        $this->bookingModel->createBooking(
             (int) $user['id'],
             (int) $showingRow['showing_id'],
             $selectedSeats,
@@ -107,7 +107,7 @@ class BookingController extends BaseController
             return $this->redirect($request, $response, 'auth.login');
         }
 
-        $data = $this->booking_model->getFullBookingsByUserId((int) $user['id']);
+        $data = $this->bookingModel->getFullBookingsByUserId((int) $user['id']);
 
         return $this->render($response, 'user/tickets.php', ['data' => $data]);
     }
@@ -191,7 +191,7 @@ class BookingController extends BaseController
         $row_B = $this->showModel->getSeatsByRow("B");
         $row_C = $this->showModel->getSeatsByRow("C");
 
-        $bookedSeatIds = $this->booking_model->getBookedSeatIds($scheduleId);
+        $bookedSeatIds = $this->bookingModel->getBookedSeatIds($scheduleId);
 
         $data = ["row_A" => $row_A, "row_B" => $row_B, "row_C" => $row_C, "bookedSeatIds" => $bookedSeatIds];
 
@@ -264,7 +264,7 @@ class BookingController extends BaseController
         }
 
         // Fetch booking from DB
-        $booking = $this->bookingsModel->findById($bookingId);
+        $booking = $this->bookingModel->findById($bookingId);
 
         if (!$booking) {
             FlashMessage::add('error', "Booking not found.");
@@ -377,5 +377,13 @@ class BookingController extends BaseController
         FlashMessage::add('success', "Your booking list has been cleared.");
 
         return $this->redirect($request, $response, 'booking.index');
+    }
+
+    public function renderTransactionsPage(Request $request, Response $response, array $args): Response
+    {
+        $transactions = $this->bookingModel->getAllTransactions();
+
+
+        return $this->render($response, 'admin/transactions.php', ['data' => $transactions]);
     }
 }

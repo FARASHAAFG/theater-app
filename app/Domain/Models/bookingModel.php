@@ -294,4 +294,25 @@ class bookingModel extends BaseModel
 
         return array_column($stmt->fetchAll(), 'seat_id');
     }
+
+    /**
+     * Gets all transactions from db
+     * @return array
+     */
+    public function getAllTransactions(): array
+    {
+        $sql = "SELECT t.*, u.id, u.first_name, u.last_name, u.username, u.email FROM transactions t
+        LEFT JOIN users u ON t.user_id = u.id";
+
+        return $this->selectAll($sql);
+    }
+
+    public function findById(?int $bookingId): array
+    {
+        $sql = "SELECT * FROM reservations WHERE reservation_id = :bookingId";
+        $params = [];
+        $params[':bookingId'] = $bookingId;
+
+        return $this->selectAll($sql, $params);
+    }
 }
