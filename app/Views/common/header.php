@@ -48,7 +48,11 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                 <li class="nav-item">
-                    <a class="nav-link" href="<?= APP_BASE_URL ?>/user/shows">Home</a>
+                    <a class="nav-link" href="<?= APP_BASE_URL ?>">Home</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= APP_BASE_URL ?>/user/shows">Shows</a>
                 </li>
 
                 <li class="nav-item">
@@ -83,8 +87,9 @@
                     <a href="<?= APP_BASE_URL ?>/logout" class="btn btn-sm btn-danger">Logout</a>
                 <?php else: ?>
                     <a href="<?= APP_BASE_URL ?>/login" class="btn btn-sm btn-primary">Login</a>
+                    <?php ?>
+                    <a href="<?= APP_BASE_URL ?>/register" class="btn btn-sm btn-primary">Register</a>
                 <?php endif; ?>
-
             </div>
         </div>
     </nav>
