@@ -32,7 +32,7 @@ return static function (Slim\App $app): void {
 
     $app->get('/booking/add', [BookingController::class, 'add'])
         ->setName('booking.add');
-        $app->get('/checkout', [BookingController::class, 'showCheckout']);
+    $app->get('/checkout', [BookingController::class, 'showCheckout']);
 
 
     $app->get('/booking/update', [BookingController::class, 'update'])
@@ -101,6 +101,8 @@ return static function (Slim\App $app): void {
         ->setName('auth.login');
     $app->post('/login', [AuthController::class, 'authenticate']);
     $app->get('/logout', [AuthController::class, 'logout'])
+        ->setName('auth.logout');
+    $app->post('/logout', [AuthController::class, 'logout'])
         ->setName('auth.logout');
 
     $app->get('/dashboard', [AuthController::class, 'dashboard'])
