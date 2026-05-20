@@ -26,8 +26,12 @@ $topRatedShows = $data['topRatedShows'] ?? [];
                         </blockquote>
                         <div class="featured-stars">
                             <?php for ($i = 1; $i <= 5; $i++): ?>
-                                <i class="bi bi-star<?= $i <= round($show['average_rating']) ? '-fill' : '' ?>"></i>
+                                <i class="bi bi-star<?= $i <= round($show['featured_rating'] ?? 0) ? '-fill' : '' ?>"></i>
                             <?php endfor; ?>
+                        </div>
+                        <!-- USER -->
+                        <div class="featured-user">
+                            <?= hs($show['featured_user']) ?>
                         </div>
                     </div>
                 </div>

@@ -56,37 +56,43 @@ $htmlLocale = locale();
                 <li class="nav-item">
                     <a class="nav-link" href="<?= APP_BASE_URL ?>"><?= hs(t('nav.home')) ?></a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="<?= APP_BASE_URL ?>/user/shows"><?= hs(t('nav.shows')) ?></a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?= APP_BASE_URL ?>/dashboard" class="btn btn-outline-light position-relative">
+                        <i class="bi bi-bag-fill"></i> <?= hs(t('user.dashboard')) ?>
+
+                    </a>
                 </li>
                 <li class="nav-item d-flex align-items-center ms-2">
                     <?php require __DIR__ . '/lang-switcher.php'; ?>
                 </li>
+
             </ul>
 
             <div class="d-flex align-items-center gap-3">
-                <a href="<?= APP_BASE_URL ?>/user/tickets" class="btn btn-outline-light position-relative">
-                    <i class="bi bi-bag-fill"></i> <?= hs(t('nav.tickets')) ?>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge">
-                        <?= SessionManager::get('id') ?? 0 ?>
-                    </span>
-                </a>
 
-                <div class="d-flex align-items-center text-white px-3 py-1 rounded-pill">
-                    <i class="bi bi-person-circle me-2"></i>
-                    <span class="fw-semibold">
-                        <?= $user ? hs($user['full_name']) : hs(t('user.guest')) ?>
-                    </span>
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="<?= APP_BASE_URL ?>/user/tickets" class="btn btn-outline-light position-relative">
+                        <i class="bi bi-bag-fill"></i> <?= hs(t('nav.tickets')) ?>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge">
+                            <?= SessionManager::get('id') ?? 0 ?>
+                        </span>
+                    </a>
+
+
+
+                    <?php if (!empty($user['is_authenticated'])): ?>
+                        <a href="<?= APP_BASE_URL ?>/logout" class="btn btn-sm btn-danger"><?= hs(t('nav.logout')) ?></a>
+                    <?php else: ?>
+                        <a href="<?= APP_BASE_URL ?>/login" class="btn btn-sm btn-primary"><?= hs(t('nav.login')) ?></a>
+                        <a href="<?= APP_BASE_URL ?>/register" class="btn btn-sm btn-outline-light"><?= hs(t('nav.register')) ?></a>
+                    <?php endif; ?>
                 </div>
-
-                <?php if (!empty($user['is_authenticated'])): ?>
-                    <a href="<?= APP_BASE_URL ?>/logout" class="btn btn-sm btn-danger"><?= hs(t('nav.logout')) ?></a>
-                <?php else: ?>
-                    <a href="<?= APP_BASE_URL ?>/login" class="btn btn-sm btn-primary"><?= hs(t('nav.login')) ?></a>
-                    <a href="<?= APP_BASE_URL ?>/register" class="btn btn-sm btn-outline-light"><?= hs(t('nav.register')) ?></a>
-                <?php endif; ?>
             </div>
-        </div>
     </nav>
 
     <div class="container mt-4">
