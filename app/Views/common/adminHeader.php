@@ -99,6 +99,11 @@
                 <!-- Top bar -->
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2"><?= htmlspecialchars($title ?? 'Dashboard') ?></h1>
+
+                    <a class="nav-link" href="<?= APP_BASE_URL ?>/dashboard">
+                        Personal Dashboard
+                    </a>
+
                     <div class="text-muted">
                         Logged in as: <strong><?= htmlspecialchars($username ?? 'Admin') ?></strong>
                     </div>
