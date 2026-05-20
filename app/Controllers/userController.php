@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-
+use App\Domain\Models\ReviewsModel;
 use App\Helpers\FlashMessage;
 use App\Domain\Models\showModel;
 use DI\Container;
@@ -13,7 +13,7 @@ class userController extends BaseController
 {
 
 
-    public function __construct(Container $container, private showModel $showModel)
+    public function __construct(Container $container, private showModel $showModel, private ReviewsModel $reviewsModel)
     {
         parent::__construct($container);
     }
@@ -46,9 +46,11 @@ class userController extends BaseController
 
         $poster = $this->showModel->getPosterByShowId($id);
         $schedules = $this->showModel->getSchedulesByShowId($id);
+        $reviews = $this->reviewsModel->getReviewsByShowId($id);
+
+        $ratingData = $this->reviewsModel->getAverageRating($id);
 
         // fetch poster data
-        return $this->render($response, 'user/show_details.php', ['show' => $show, 'poster' => $poster, 'schedules' => $schedules]);
+        return $this->render($response, 'user/show_details.php', ['show' => $show, 'poster' => $poster, 'schedules' => $schedules, 'reviews' => $reviews, 'ratingData' => $ratingData]);
     }
-
 }
