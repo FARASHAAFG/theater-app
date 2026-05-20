@@ -17,6 +17,8 @@ use App\Controllers\AuthController;
 use App\Controllers\BookingController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\AdminAuthMiddleware;
+use App\Controllers\TwoFactorController;
+use App\Middleware\TwoFactorMiddleware;
 
 
 
@@ -73,8 +75,34 @@ return static function (Slim\App $app): void {
 
     $app->get('/dashboard', [AuthController::class, 'dashboard'])
         ->setName('user.dashboard')
+        ->add(TwoFactorMiddleware::class)
+        ->add(AuthMiddleware::class);
+    // 2FA Routes
+    $app->get('/2fa/setup', [TwoFactorController::class, 'showSetup'])
+        ->setName('2fa.setup')
         ->add(AuthMiddleware::class);
 
+    $app->post('/2fa/verify-and-enable', [TwoFactorController::class, 'verifyAndEnable'])
+        ->setName('2fa.enable')
+        ->add(AuthMiddleware::class);
+
+    $app->get('/2fa/verify', [TwoFactorController::class, 'showVerify'])
+        ->setName('2fa.verify')
+        ->add(AuthMiddleware::class);
+
+    $app->post('/2fa/verify', [TwoFactorController::class, 'verify'])
+        ->setName('2fa.verify.post')
+        ->add(AuthMiddleware::class);
+
+    $app->get('/2fa/disable', [TwoFactorController::class, 'showDisable'])
+        ->setName('2fa.disable.show')
+        ->add(TwoFactorMiddleware::class)
+        ->add(AuthMiddleware::class);
+
+    $app->post('/2fa/disable', [TwoFactorController::class, 'disable'])
+        ->setName('2fa.disable')
+        ->add(TwoFactorMiddleware::class)
+        ->add(AuthMiddleware::class);
     //! -------------------------- //
     // TODO: Review these routes
     /*$app->group('/checkout', function ($group) {
@@ -128,7 +156,9 @@ return static function (Slim\App $app): void {
 
         //* Auth
         $group->get('/dashboard', [AdminDashboardController::class, 'dashboard'])->setName('admin.dashboard');
-    })->add(AdminAuthMiddleware::class);
+    })->add(TwoFactorMiddleware::class)
+        ->add(AdminAuthMiddleware::class)
+        ->add(AuthMiddleware::class);
 
 
 

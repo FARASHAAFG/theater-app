@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Domain\Models\TwoFactorAuthModel;
 use Exception;
 use App\Domain\Models\UserModel;
 use App\Helpers\FlashMessage;
@@ -15,12 +16,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
  */
 class AuthController extends BaseController
 {
-    /**
-     * Constructor for Auth controller
-     * @param Container $container
-     * @param UserModel $userModel
-     */
-    public function __construct(Container $container, private UserModel $userModel)
+    public function __construct(Container $container, private UserModel $userModel, private TwoFactorAuthModel $twoFactorModel)
     {
         parent::__construct($container);
     }
@@ -129,20 +125,21 @@ class AuthController extends BaseController
      */
     public function authenticate(Request $request, Response $response, array $args): Response
     {
-        // TODO: Extract the identifier and password from the submitted form
         $form_data = $request->getParsedBody();
 
-        // TODO: Validate that both fields are present
         if (isset($form_data['identifier']) && isset($form_data['password'])) {
-            // TODO: Attempt to verify the credentials using the UserModel
-            $user = $this->userModel->verifyCredentials($form_data['identifier'], $form_data['password']);
-            // TODO: If authentication fails, display an error and redirect to the login page
+
+            $user = $this->userModel->verifyCredentials(
+                $form_data['identifier'],
+                $form_data['password']
+            );
+
             if ($user === null) {
                 FlashMessage::error('Invalid Credentials.');
                 return $this->redirect($request, $response, 'auth.login');
             }
-            // TODO: Store the authenticated user's data in the session
-            //       (ID, email, full name, role, and a flag indicating they are authenticated)
+
+            // store session user
             SessionManager::set('user', [
                 'id' => $user['id'],
                 'email' => $user['email'],
@@ -150,17 +147,25 @@ class AuthController extends BaseController
                 'role' => $user['role'],
                 'is_authenticated' => true
             ]);
-            // TODO: Display a welcome message and redirect based on role:
-            //       admins go to the admin dashboard, customers go to the user dashboard
+
+            $twoFactorEnabled = $this->twoFactorModel->isEnabled($user['id']);
+
+            SessionManager::set('requires_2fa', $twoFactorEnabled);
+
+            // if user has NO 2FA → already verified
+            if (!$twoFactorEnabled) {
+                SessionManager::set('2fa_verified', true);
+            } else {
+                SessionManager::set('2fa_verified', false);
+            }
             FlashMessage::success("Welcome back, {$user['first_name']}!");
-
-
             if ($user['role'] === 'admin') {
                 return $this->redirect($request, $response, 'admin.dashboard');
-            } else {
-                return $this->redirect($request, $response, 'user.dashboard');
             }
+
+            return $this->redirect($request, $response, 'user.dashboard');
         }
+
         FlashMessage::error('Please input credentials');
         return $this->redirect($request, $response, 'auth.login');
     }
@@ -195,8 +200,9 @@ class AuthController extends BaseController
      * @param array $args
      * @return Response
      */
-    public function dashboard(Request $request, Response $response, array $args): Response
+    /*public function dashboard(Request $request, Response $response, array $args): Response
     {
+
         // TODO: Create a $data array with 'title' => 'Dashboard'
         $data = [
             'title' => 'Dashboard'
@@ -204,5 +210,32 @@ class AuthController extends BaseController
 
         // TODO: Render 'user/dashboard.php' view and pass $data
         return $this->render($response, 'user/dashboard.php', $data);
+    }*/
+
+    public function dashboard(Request $request, Response $response): Response
+    {
+        $user = SessionManager::get('user');
+
+        if (!$user) {
+            FlashMessage::error('You must be logged in.');
+            return $this->redirect($request, $response, 'auth.login');
+        }
+
+        $userId = $user['id'];
+
+        // check if 2FA is enabled in DB
+        $twoFactorEnabled = $this->twoFactorModel->isEnabled($userId);
+
+        $data = [
+            'title' => 'Dashboard',
+            'twoFactorEnabled' => $twoFactorEnabled,
+            'twoFactorVerified' => SessionManager::get('2fa_verified', false)
+        ];
+
+        return $this->render(
+            $response,
+            'user/dashboard.php',
+            $data
+        );
     }
 }

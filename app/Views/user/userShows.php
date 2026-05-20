@@ -56,6 +56,7 @@ $posters = $data ?? [];
                 </div>
             </div>
         </div>
+        <br>
         <!-- Search Results Container -->
         <div id="searchResults" class="row">
             <!-- Results will be dynamically inserted here by JavaScript -->
