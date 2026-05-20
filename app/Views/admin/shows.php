@@ -95,7 +95,7 @@ $shows = $data ?? [];
 
                     <td>
 
-                        <a href="/theater-app/admin/show/delete/<?= (int)$show['show_id']; ?>" class="btn btn-danger btn-s">Delete</a>
+                        <a href="/theater-app/admin/show/delete/<?= (int)$show['show_id']; ?>" class="btn btn-danger btn-s" onclick="return confirm('Are you sure you want to delete this product?')">Delete</a>
 
                     </td>
 
