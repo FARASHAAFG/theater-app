@@ -11,6 +11,11 @@ class ReviewsModel extends BaseModel
         parent::__construct($db_service);
     }
 
+    /**
+     * Gets reviews from a show using the show id
+     * @param int $showId
+     * @return array
+     */
     public function getReviewsByShowId(int $showId): array
     {
         $sql = "
@@ -24,6 +29,14 @@ class ReviewsModel extends BaseModel
         return $this->selectAll($sql, ['showId' => $showId]);
     }
 
+    /**
+     * Adds a review to the review table
+     * @param int $userId
+     * @param int $showId
+     * @param int $rating
+     * @param string $comment
+     * @return int
+     */
     public function addReview(
         int $userId,
         int $showId,
@@ -53,6 +66,11 @@ class ReviewsModel extends BaseModel
         ]);
     }
 
+    /**
+     * Gets the average rating of a show given the show id
+     * @param int $showId
+     * @return array|bool
+     */
     public function getAverageRating(int $showId): array|false
     {
         $sql = "
@@ -66,6 +84,11 @@ class ReviewsModel extends BaseModel
         return $this->selectOne($sql, ['showId' => $showId]);
     }
 
+    /**
+     * Deletes a review from the review table given the review id
+     * @param int $reviewId
+     * @return int
+     */
     public function deleteReview(int $reviewId): bool
     {
         $sql = "
@@ -77,6 +100,12 @@ class ReviewsModel extends BaseModel
             'reviewId' => $reviewId
         ]);
     }
+
+    /**
+     * Gets the top 5 rated shows
+     * @param int $limit
+     * @return array
+     */
     public function getTopRatedShows(int $limit = 5): array
     {
         $sql = "

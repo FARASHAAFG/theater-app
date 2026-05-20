@@ -9,15 +9,21 @@ use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+/**
+ * Controller for user stuff
+ */
 class userController extends BaseController
 {
-
-
+    /**
+     * Constructor for user controller
+     * @param Container $container
+     * @param showModel $showModel
+     * @param ReviewsModel $reviewsModel
+     */
     public function __construct(Container $container, private showModel $showModel, private ReviewsModel $reviewsModel)
     {
         parent::__construct($container);
     }
-
 
     public function index(Request $request, Response $response, array $args): Response
     {
@@ -25,14 +31,26 @@ class userController extends BaseController
         return $this->render($response, 'admin/index.php', $info);
     }
 
-
+    /**
+     * Renders user shows page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function renderUserShows(Request $request, Response $response, array $args): Response
     {
         $data = $this->showModel->getAllPosters();
         return $this->render($response, 'user/userShows.php', ["data" => $data]);
     }
 
-
+    /**
+     * Renders show details page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function renderShowDetails(Request $request, Response $response, array $args): Response
     {
 

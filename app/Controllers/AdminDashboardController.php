@@ -7,8 +7,17 @@ use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+/**
+ * Controller for the admin dashboard
+ */
 class AdminDashboardController extends BaseController
 {
+
+    /**
+     * Constructor for admin dashboard controller
+     * @param Container $container
+     * @param AdminDashboardModel $dashboardModel
+     */
     public function __construct(
         Container $container,
         private AdminDashboardModel $dashboardModel
@@ -18,6 +27,10 @@ class AdminDashboardController extends BaseController
 
     /**
      * Display the admin dashboard with e-commerce statistics.
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
     public function dashboard(Request $request, Response $response, array $args): Response
     {

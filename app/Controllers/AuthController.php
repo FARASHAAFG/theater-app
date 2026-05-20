@@ -10,13 +10,28 @@ use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+/**
+ * Controller for authentication
+ */
 class AuthController extends BaseController
 {
+    /**
+     * Constructor for Auth controller
+     * @param Container $container
+     * @param UserModel $userModel
+     */
     public function __construct(Container $container, private UserModel $userModel)
     {
         parent::__construct($container);
     }
 
+    /**
+     * Renders register page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function register(Request $request, Response $response, array $args): Response
     {
         $data['data'] = [
@@ -30,6 +45,13 @@ class AuthController extends BaseController
         return $this->render($response, "auth/register.php", $data);
     }
 
+    /**
+     * Handles account creation
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function store(Request $request, Response $response, array $args): Response
     {
         $form_data = $request->getParsedBody();
@@ -82,6 +104,10 @@ class AuthController extends BaseController
     //* Authentication Lab Methods (login, logout, etc.) would go here
     /**
      * Display the login form (GET request).
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
     public function login(Request $request, Response $response, array $args): Response
     {
@@ -96,6 +122,10 @@ class AuthController extends BaseController
 
     /**
      * Process login form submission (POST request).
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
     public function authenticate(Request $request, Response $response, array $args): Response
     {
@@ -137,6 +167,10 @@ class AuthController extends BaseController
 
     /**
      * Logout the current user (GET request).
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
     public function logout(Request $request, Response $response, array $args): Response
     {
@@ -155,7 +189,11 @@ class AuthController extends BaseController
     }
 
     /**
-     * Display user dashboard (protected route).
+     * Displays user dashboard (protected route)
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
     public function dashboard(Request $request, Response $response, array $args): Response
     {

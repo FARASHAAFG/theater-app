@@ -11,9 +11,16 @@ use LDAP\Result;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-
+/**
+ * Controller for uploads
+ */
 class UploadController extends BaseController
 {
+    /**
+     * Constructor for upload controller
+     * @param Container $container
+     * @param showModel $showModel
+     */
     public function __construct(Container $container, private showModel $showModel)
     {
         parent::__construct($container);
@@ -22,6 +29,10 @@ class UploadController extends BaseController
 
     /**
      * Display the upload form.
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
     public function index(Request $request, Response $response, array $args): Response
     {
@@ -41,9 +52,12 @@ class UploadController extends BaseController
 
     }
 
-
     /**
-     * Process file upload.
+     * Processes file upload.
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
     public function upload(Request $request, Response $response, array $args): Response
     {

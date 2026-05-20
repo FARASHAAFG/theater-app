@@ -9,14 +9,28 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Helpers\SessionManager;
 
-
+/**
+ * BookingController is the controller used for booking seats
+ */
 class BookingController extends BaseController
 {
+    /**
+     * Constructor for BookingController
+     * @param Container $container
+     * @param showModel $showModel
+     */
     public function __construct(Container $container, private showModel $showModel)
     {
         parent::__construct($container);
     }
 
+    /**
+     * Display the admin dashboard with e-commerce statistics.
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function index(Request $request, Response $response, array $args): Response
     {
         $booking = SessionManager::get('booking', []);
@@ -33,6 +47,14 @@ class BookingController extends BaseController
 
         return $this->render($response, 'booking/bookingIndexView.php', ['booking' => $booking, 'totalItems' => $totalItems, 'grandTotal' => $grandTotal]);
     }
+
+    /**
+     * Gets the schedule of the show from args and re-renders the booking page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function getScheduleForBooking(Request $request, Response $response, array $args): Response
     {
 
@@ -58,6 +80,14 @@ class BookingController extends BaseController
         // fetch poster data
         return $this->render($response, 'user/bookingSchedule.php', ['show' => $show,  'schedules' => $schedules]);
     }
+
+    /**
+     * Renders the bookingSchedule page with the given schedule_id
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function getSelectedId(Request $request, Response $response, array $args): Response
     {
 
@@ -67,7 +97,13 @@ class BookingController extends BaseController
         return $this->render($response, 'user/bookingSchedule.php', ['schedule_id' => $id]);
     }
 
-
+    /**
+     * Fetches available seats and uses the data to render seats page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function seatSelect(Request $request, Response $response, array $args): Response
     {
         //shoing id is parsing
@@ -98,12 +134,23 @@ class BookingController extends BaseController
         return $this->render($response, 'user/seats.php', $data);
     }
 
-
+    /**
+     * Getter function
+     * @param int $id
+     * @return int
+     */
     public function SelectedScheduleId(int $id): int
     {
         return $id;
     }
 
+    /**
+     * Renders shows page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function renderShows(Request $request, Response $response, array $args): Response
     {
         $shows = $this->showModel->getAllShows();
@@ -113,6 +160,13 @@ class BookingController extends BaseController
 
     //the step before the reservation its select the seat and show ticket for purchaise;
 
+    /**
+     * The step before the reservation, select the seat and show ticket for purchase
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function renderSeat(Request $request, Response $response, array $args): Response
     {
         $data = $request->getParsedBody();
@@ -129,6 +183,13 @@ class BookingController extends BaseController
         return $this->render($response, 'user/booking.php', $data);
     }
 
+    /**
+     * Deals with ticket booking logic
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function add(Request $request, Response $response, array $args): Response
     {
         $data = $request->getParsedBody();
@@ -171,6 +232,14 @@ class BookingController extends BaseController
             'booking' => $sessionBooking
         ]);
     }
+
+    /**
+     * Updates bookings
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function update(Request $request, Response $response, array $args): Response
     {
         $data = $request->getParsedBody();
@@ -203,6 +272,14 @@ class BookingController extends BaseController
 
         return $this->redirect($request, $response, 'booking.index');
     }
+
+    /**
+     * Removes booking
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function remove(Request $request, Response $response, array $args): Response
     {
         $data = $request->getParsedBody();
@@ -222,6 +299,14 @@ class BookingController extends BaseController
 
         return $this->redirect($request, $response, 'booking.index');
     }
+
+    /**
+     * Clears your bookings
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function clear(Request $request, Response $response, array $args): Response
     {
         SessionManager::remove('booking');

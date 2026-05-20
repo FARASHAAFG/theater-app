@@ -20,6 +20,10 @@ class showModel extends BaseModel
         return $this->selectAll(' SELECT * FROM posters JOIN shows ON posters.show_id = shows.show_id');
     }
 
+    /**
+     * Queries database to get all shows
+     * @return array
+     */
     public function getAllShows(): array
     {
         // Query to get ALL shows, even those without posters
@@ -32,9 +36,14 @@ class showModel extends BaseModel
         return $this->selectAll($sql);
     }
 
+    /**
+     * Queries DB to get shows that match the search and the filter
+     * @param string $query
+     * @param mixed $type
+     * @return array
+     */
     public function searchShows(string $query = '', ?string $type = ''): array
     {
-        // NO ERRORS UNTIL HERE
         $sql = "SELECT s.*,
          p.*
          FROM shows s
@@ -66,17 +75,11 @@ class showModel extends BaseModel
         return $this->selectAll($sql, $params);
     }
 
-    public function getAllCategories(): array
-    {
-        $sql = "SELECT DISTINCT show_type
-        FROM shows s
-        LEFT JOIN posters p
-        ON s.show_id = p.show_id
-        ";
-
-        return $this->selectAll($sql);
-    }
-
+    /**
+     * Queries DB to get a show by the poster id
+     * @param int $id
+     * @return array|bool
+     */
     public function getById(int $id): array|false
     {
         $sql = "
@@ -89,6 +92,11 @@ class showModel extends BaseModel
         return $this->selectOne($sql, ["id" => $id]);
     }
 
+    /**
+     * Gets posters given the show id
+     * @param int $id
+     * @return array|bool
+     */
     public function getByShowId(int $id): array|false
     {
         $sql = "
@@ -100,6 +108,11 @@ class showModel extends BaseModel
         return $this->selectOne($sql, ["id" => $id]);
     }
     //! If $posterId is actually the inputted show_id maybe change the variable name
+    /**
+     * Gets schedules of a show given a poster id of an associated poster
+     * @param int $posterId
+     * @return array
+     */
     public function getSchedulesByPosterId(int $posterId): array
     {
         $sql = "
