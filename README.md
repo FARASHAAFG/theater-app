@@ -1,13 +1,26 @@
-# Slim Framework Starter Template
+# LivePlay
 
-A lightweight MVC web application starter template built on top of the Slim PHP microframework. Ideal for projects that require Slim's simplicity without sacrificing the benefits of a clean MVC architecture.
+## 
 
-## Why Using this Template?
+LivePlay is an E-commerce web application that allows users (general public/customers) to browse shows, select showtimes, reserve seats, and purchase their tickets online. It targets those who are looking for entertainment. It also provides the admin with an admin panel for managing these movies (CRUD operations), schedules, and user transactions (e.g., seeing all orders).
 
-This template provides a starting point for building web applications with the Slim 4 framework using the classic MVC (Model–View–Controller) pattern. It includes everything you need to get started, without the extra complexity of larger frameworks.
+This application will reduce the need for in person ticket purchasing and improves the user’s convenience (e.g. browsing movies easily by genre and language). It also provides the admin with a centralized system to manage the movie theater efficiently..
 
-## What's Included
+## Programming Languages
 
+LivePlay utilizes the following programming languages:
+- **HTML**
+- **PHP**
+- **JS**
+- **CSS**
+- **SQL**
+
+## Authors
+The LivePlay website was created by Vanier students **Farwah Bakhsh, Mustafa Hussain and Jacob Magera** as their E-Commerce final project!
+
+## Installation
+There are a few steps necessary before running the website on your own device
+### 1. Install and set up Slim-MVC
 This starter template follows best practices and adheres to industry standards:
 
 - **Slim 4**: The "slim" PHP microframework
@@ -20,19 +33,19 @@ This starter template follows best practices and adheres to industry standards:
 - **Code styles** (PSR-12)
 - **Composer** - Dependency management
 
-## Requirements
+ Requirements
 
 - PHP 8.2 or higher
 - Composer (for dependency management)
 - A web server (Apache, Nginx)
 
-## How Do I Use/Deploy this Template?
+How Do I Use/Deploy this Template?
 
 - [Option 1: Using Composer (Recommended)](#option-1-using-composer-recommended)
 - [Option 2: Using Docker (macOS/Linux/Windows)](#option-2-using-docker-macoslinuxwindows)
 - [Option 3: Manual Installation](#option-3-manual-installation)
 
-### Option 1: Using Composer (Recommended)
+Option 1: Using Composer (Recommended)
 
 **Prerequisites:**
 - PHP 8.2 or higher installed locally
@@ -50,7 +63,7 @@ This starter template follows best practices and adheres to industry standards:
 3. Open your `[project-name]-app` folder in VS Code.
 4. Adjust your database credentials in `config/env.php` (**see below**).
 
-### Option 2: Using Docker (macOS/Linux/Windows)
+Option 2: Using Docker (macOS/Linux/Windows)
 
 Docker allows you to run the application in containers without installing PHP, Apache, or MariaDB locally. This works on **macOS**, **Linux**, and **Windows**.
 
@@ -104,38 +117,6 @@ The default database name is `slim_mvc`. To use a different database name:
 
 3. Rebuild containers: `docker-compose up -d --build`
 
-**Importing Database Schema:**
-
-To automatically import a database schema when the container starts:
-
-1. Place your `.sql` file(s) in the `docker/init-db/` folder
-2. Start the containers: `docker-compose up -d`
-
-The SQL files will be executed automatically on first container creation. If you have multiple files, they run in alphabetical order (e.g., `01-schema.sql`, `02-data.sql`).
-
-To re-import the schema, remove the database volume and restart:
-```bash
-docker-compose down -v
-docker-compose up -d
-```
-
-**Database Credentials (for phpMyAdmin):**
-| Username  | Password  |
-| --------- | --------- |
-| root      | secret    |
-| slim_user | slim_pass |
-
-**Common Commands:**
-
-| Action             | Command                                    |
-| ------------------ | ------------------------------------------ |
-| Start containers   | `docker-compose up -d`                     |
-| Stop containers    | `docker-compose down`                      |
-| View app logs      | `docker-compose logs -f app`               |
-| Run composer       | `docker-compose exec app composer install` |
-| Delete database    | `docker-compose down -v`                   |
-| Rebuild containers | `docker-compose up -d --build`             |
-
 **Working with Multiple Projects:**
 
 If you run **one project at a time**, no configuration changes are needed. Simply stop one project before starting another:
@@ -164,7 +145,7 @@ services:
       - "8083:80"      # Change 8081 to 8083, 8084, etc.
 ```
 
-### Option 3: Manual Installation
+Option 3: Manual Installation
 
 1. Download this repository as a `.zip` file.
 2. Extract the downloaded `slim-mvc-main.zip` file locally.
@@ -178,14 +159,14 @@ services:
 
 **```NOTE:```** You can always clone this repository. However, if you do, you need to remove the ```.git``` ***hidden*** directory before you copy this template over to ```htdocs```
 
-## How Do I Configure My Database Connection?
+How Do I Configure My Database Connection?
 
 Follow the outlined instructions in [config/env.example.php](config/env.example.php)
 
 * Change the value of the `database` variable to reflect the name of the database to be used by your slim app.
 * You may also want to change the connection credentials in that file.
 
-## How do I Use Composer with Wampoon?
+How do I Use Composer with Wampoon?
 
 To install or update your project dependencies deployed on Wampoon, use the `composer.bat` script as follows:
 
@@ -197,7 +178,7 @@ To install or update your project dependencies deployed on Wampoon, use the `com
 | Regenerate autoloader | `./composer.bat dump-autoload -o`  | Rebuilds the optimized autoloader after adding or removing classes.             |
 
 
-## On Using Environment Variables
+On Using Environment Variables
 
 Sensitive information used in app such as your database credentials, API key, etc. MUST not be pushed into your Git repo.
 
@@ -208,21 +189,21 @@ Alternatively, you can visit the following link: [Google env search](https://www
 
 Instead, follow the instructions that are detailed in [config/env.example.php](config/env.example.php)
 
-## Project Structure
+Project Structure
 
 Here's how everything is organized:
 
 ```plaintext
 slim-mvc/
 ├── app/
-│   ├── Controllers/    # Your controllers live here
+│   ├── Controllers/    # Controllers live here
 │   ├── Domain/         # Domain logic and business rules
 │   │   ├── Models/     # Data models and entities
 │   │   └── Services/   # Business logic services
 │   ├── Helpers/        # Utility classes and helpers
 │   ├── Middleware/     # Custom middleware
 │   ├── Routes/         # Route definitions (web & API)
-│   └── Views/          # Your view templates
+│   └── Views/          # View templates
 ├── config/             # Configuration files and bootstrap
 ├── data/               # Database files, uploads, etc.
 ├── docker/             # Docker configuration files
@@ -242,43 +223,25 @@ slim-mvc/
 └── docker-compose.yml  # Docker services configuration
 ```
 
-## Quick Development Tips
-
-### Adding Routes
-
-Routes are defined in the `app/Routes/` directory. Check out the existing route files to see how it's done.
-
-### Creating Controllers
-
-Controllers go in `app/Controllers/`. They should extend the base controller class and follow PSR-4 autoloading.
-
-### Views and Templates
-
-Templates are stored in `app/Views/`. The template engine is already configured and ready to use.
-
-### Configuration
-
-App configuration lives in `config/`. Modify these files to customize your application settings.
-
-### Logging
-
-Logs are written to the `var/logs/` directory. Use the injected logger in your controllers to track what's happening.
-
-## Need Help?
+Need Help?
 
 - Check out the [Slim documentation](https://www.slimframework.com/docs/v4/) for framework-specific questions.
 - Look at the example controllers and routes to see how everything fits together.
 - The code is pretty well commented, so don't hesitate to explore it well.
 
-## Contributing
+Contributing
 
 Got ideas for improvements? Found a bug? Pull requests are welcome!
 
 - [Issues](https://github.com/frostybee/slim-mvc/issues)
 
-## Acknowledgments
+Acknowledgments
 
 The application's bootstrap process and structure of this starter template is based on [slim4-skeleton](https://github.com/odan/slim4-skeleton) by [@odan](https://github.com/odan).  Many thanks to the original developers for their work!
+
+### Servers
+
+LivePlay utilizes **Apache HTTP Server** and **Maria DB Server**, so make sure to install those and have them running, otherwise the website will not work!
 
 ## License
 
