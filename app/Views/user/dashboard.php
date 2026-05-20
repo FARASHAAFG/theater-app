@@ -5,6 +5,7 @@ use App\Helpers\ViewHelper;
 
 ViewHelper::loadHeader($title ?? 'User Dashboard');
 $user = SessionManager::get('user', []);
+//dd($user);
 ?>
 <?= App\Helpers\FlashMessage::render() ?>
 <h1>User Dashboard</h1>
