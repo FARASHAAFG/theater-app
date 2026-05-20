@@ -2,85 +2,63 @@
 
 require_once __DIR__ . '/../common/adminHeader.php';
 
-
 $show = $data['show'] ?? [];
-$poster = $data['poster'] ?? [];
-$schedules = $data['schedules'] ?? [];
 ?>
 
 <div class="container mt-4">
-    <h3 class="mb-4">Update Show</h3>
-
-    <form method="POST" action="/theater-app/admin/update_show/<?= (int)$show['show_id']; ?>">
-
+    <h3 class="mb-4"><?= hs(t('admin.form.update_show')) ?></h3>
+    <form method="POST" action="<?= APP_BASE_URL ?>/admin/update_show/<?= (int) $show['show_id'] ?>">
         <div class="mb-3">
-            <label class="form-label">French Title</label>
-            <input type="text" name="title_fr" class="form-control" value="<?= $show['title_fr'] ?>" required>
+            <label class="form-label"><?= hs(t('admin.form.title_fr')) ?></label>
+            <input type="text" name="title_fr" class="form-control" value="<?= hs($show['title_fr'] ?? '') ?>" required>
         </div>
-
         <div class="mb-3">
-            <label class="form-label">English Title</label>
-            <input type="text" name="title" class="form-control" value="<?= $show['title'] ?>" required>
+            <label class="form-label"><?= hs(t('admin.form.title_en')) ?></label>
+            <input type="text" name="title" class="form-control" value="<?= hs($show['title'] ?? '') ?>" required>
         </div>
-
-        <div class="d-flex">
-
-            <div class="m">
-                <label class="form-label">Duration</label>
-                <input type="text" name="duration" class="form-control" value="<?= $show['duration'] ?>" required>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label"><?= hs(t('admin.form.duration')) ?></label>
+                <input type="text" name="duration" class="form-control" value="<?= hs($show['duration'] ?? '') ?>" required>
             </div>
-
-            <div class="m-2">
-                <label class="form-label">Genre</label>
-                <input type="text" name="genre" class="form-control" value="<?= $show['genre'] ?>" required>
+            <div class="col-md-4 mb-3">
+                <label class="form-label"><?= hs(t('admin.form.genre')) ?></label>
+                <input type="text" name="genre" class="form-control" value="<?= hs($show['genre'] ?? '') ?>" required>
             </div>
-
-            <div class="mb-3">
-                <label class="form-label">Language</label>
-                <input type="text" name="language" class="form-control" value="<?= $show['language'] ?>" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Cast</label>
-                <input type="text" name="cast" class="form-control" value="<?= $show['cast'] ?>" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Show Type</label>
-                <input type="text" name="show_type" class="form-control" value="<?= $show['show_type'] ?>" required>
+            <div class="col-md-4 mb-3">
+                <label class="form-label"><?= hs(t('admin.form.language')) ?></label>
+                <input type="text" name="language" class="form-control" value="<?= hs($show['language'] ?? '') ?>" required>
             </div>
         </div>
-
         <div class="mb-3">
-            <label class="form-label">Is Active?</label><br>
-
+            <label class="form-label"><?= hs(t('admin.form.cast')) ?></label>
+            <input type="text" name="cast" class="form-control" value="<?= hs($show['cast'] ?? '') ?>">
+        </div>
+        <div class="mb-3">
+            <label class="form-label"><?= hs(t('admin.form.show_type')) ?></label>
+            <input type="text" name="show_type" class="form-control" value="<?= hs($show['show_type'] ?? '') ?>" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label"><?= hs(t('admin.form.is_active')) ?></label><br>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="is_active" value="Yes"
-                    <?= $show['is_active'] === 'Yes' ? 'checked' : '' ?>>
-                <label class="form-check-label">Yes</label>
+                <input class="form-check-input" type="radio" name="is_active" value="Yes" <?= ($show['is_active'] ?? '') === 'Yes' ? 'checked' : '' ?>>
+                <label class="form-check-label"><?= hs(t('common.yes')) ?></label>
             </div>
-
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="is_active" value="No"
-                    <?= $show['is_active'] === 'No' ? 'checked' : '' ?>>
-                <label class="form-check-label">No</label>
+                <input class="form-check-input" type="radio" name="is_active" value="No" <?= ($show['is_active'] ?? '') === 'No' ? 'checked' : '' ?>>
+                <label class="form-check-label"><?= hs(t('common.no')) ?></label>
             </div>
         </div>
-
         <div class="mb-3">
-            <label class="form-label">English Description</label>
-            <textarea name="description" class="form-control" rows="3" required><?= $show['description'] ?></textarea>
+            <label class="form-label"><?= hs(t('admin.form.description_en')) ?></label>
+            <textarea name="description" class="form-control" rows="3" required><?= hs($show['description'] ?? '') ?></textarea>
         </div>
-
         <div class="mb-3">
-            <label class="form-label">French Description</label>
-            <textarea name="description_fr" class="form-control" rows="3" required><?= $show['description_fr'] ?></textarea>
+            <label class="form-label"><?= hs(t('admin.form.description_fr')) ?></label>
+            <textarea name="description_fr" class="form-control" rows="3" required><?= hs($show['description_fr'] ?? '') ?></textarea>
         </div>
-
-        <button type="submit" class="btn btn-primary">Update Show</button>
-
-
+        <button type="submit" class="btn btn-primary"><?= hs(t('admin.form.update_submit')) ?></button>
     </form>
 </div>
 
-<?php require_once __DIR__ . '/../common/footer.php'; ?>
+<?php require_once __DIR__ . '/../common/adminFooter.php'; ?>

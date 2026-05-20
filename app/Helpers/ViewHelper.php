@@ -6,6 +6,20 @@ namespace App\Helpers;
 
 class ViewHelper
 {
+    /**
+     * Translation helper for the current request locale (session/cookie).
+     */
+    public static function translator(): TranslationHelper
+    {
+        $locale = $_SESSION['locale'] ?? $_COOKIE['locale'] ?? 'en';
+        $helper = new TranslationHelper(APP_LANG_DIR, 'en', ['en', 'fr']);
+
+        if ($helper->isLocaleAvailable($locale)) {
+            $helper->setLocale($locale);
+        }
+
+        return $helper;
+    }
 
     /**
      * Load the common header for the page.
@@ -16,6 +30,7 @@ class ViewHelper
     public static function loadHeader(string $page_title): void
     {
         $page_title = $page_title ?? 'Default Title';
+        $translator = self::translator();
         require_once APP_VIEWS_PATH . '/common/header.php';
     }
 
@@ -41,7 +56,8 @@ class ViewHelper
     public static function loadAdminHeader(string $page_title): void
     {
         $page_title = $page_title ?? 'Admin Panel';
-        require_once APP_VIEWS_PATH . '/admin/adminHeader.php';
+        $translator = self::translator();
+        require_once APP_VIEWS_PATH . '/common/adminHeader.php';
     }
     public static function loadAdminFooter(): void
     {

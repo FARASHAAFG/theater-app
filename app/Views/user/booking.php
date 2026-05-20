@@ -4,59 +4,47 @@ use App\Helpers\SessionManager;
 
 require_once __DIR__ . '/../common/header.php';
 
-$seats = $data["seats"] ?? [];
-var_dump($seats);
-
-//var_dump($seats);
-
-$scedule = SessionManager::get('schedule');
-//var_dump($scedule);
-
-$showTitle = SessionManager::get('showTitle');
-//var_dump($showTitle);
-$user = SessionManager::get('user');
-//var_dump($user);
-//echo $scedule[0]['start_time'];
-//var_dump($scedule);
-//SessionManager::get('showingId');
+$seats = $data['data']['seats'] ?? $data['seats'] ?? [];
+$schedule = SessionManager::get('schedule', []);
+$showTitle = SessionManager::get('showTitle', '');
+$scheduleRow = $schedule[0] ?? [];
 ?>
 
-
-
-
 <form action="<?= APP_BASE_URL ?>/user/checkout" method="POST">
-    <!-- Hidden fields to pass data to controller -->
-    <input type="hidden" name="schedule_id" value="<?= hs($scedule[0]['showing_id']) ?>">
+    <input type="hidden" name="schedule_id" value="<?= hs((string) ($scheduleRow['showing_id'] ?? '')) ?>">
     <input type="hidden" name="show_title" value="<?= hs($showTitle) ?>">
 
-    <?php foreach ($seats as $seat): ?>
-        <!-- Hidden field for each seat -->
-        <input type="hidden" name="seats[]" value="<?= hs($seat) ?>">
-
-        <!-- Display card (just for preview) -->
+    <?php foreach ((array) $seats as $seat): ?>
+        <input type="hidden" name="seats[]" value="<?= hs((string) $seat) ?>">
         <div class="card border-primary mb-3" style="max-width: 18rem;">
-            <div class="card-header">Ticket</div>
+            <div class="card-header"><?= hs(t('booking.ticket')) ?></div>
             <div class="card-body">
-                <p class="card-text">Schedule: <?= hs($scedule[0]['start_time']) ?></p>
-                <p class="card-text">Seat_id: <?= hs($seat) ?></p>
+                <p class="card-text"><?= hs(t('booking.schedule_label')) ?>: <?= hs($scheduleRow['start_time'] ?? '') ?></p>
+                <p class="card-text"><?= hs(t('booking.seat_id')) ?>: <?= hs((string) $seat) ?></p>
                 <p class="card-text"><?= hs($showTitle) ?></p>
             </div>
         </div>
     <?php endforeach; ?>
-    <label>Cardholder Name</label><br>
-    <input type="text" name="card_name" required><br><br>
 
-    <label>Card Number</label><br>
-    <input type="text" name="card_number" maxlength="19" required><br><br>
+    <div class="mb-3">
+        <label class="form-label"><?= hs(t('booking.cardholder_name')) ?></label>
+        <input type="text" name="card_name" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label"><?= hs(t('booking.card_number')) ?></label>
+        <input type="text" name="card_number" class="form-control" maxlength="19" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label"><?= hs(t('booking.expiry_date')) ?></label>
+        <input type="month" name="expiry_date" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label"><?= hs(t('booking.cvv')) ?></label>
+        <input type="text" name="cvv" class="form-control" maxlength="4" required>
+    </div>
 
-    <label>Expiry Date</label><br>
-    <input type="month" name="expiry_date" required><br><br>
-
-    <label>CVV</label><br>
-    <input type="text" name="cvv" maxlength="4" required><br><br>
-
-
-
-    <button type="submit" class="btn btn-success">Confirm Booking</button>
-    <a href="<?= APP_BASE_URL ?>/seats" class="btn btn-danger">Cancel</a>
+    <button type="submit" class="btn btn-success"><?= hs(t('booking.confirm')) ?></button>
+    <a href="<?= APP_BASE_URL ?>/user/shows" class="btn btn-danger"><?= hs(t('booking.cancel')) ?></a>
 </form>
+
+<?php require_once __DIR__ . '/../common/footer.php'; ?>

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Helpers;
 
 use App\Helpers\Core\Result;
@@ -8,79 +10,58 @@ use Psr\Http\Message\UploadedFileInterface;
 
 class FileUploadHelper
 {
-    /**
-     * Upload a file with validation and return a Result.
-     *
-     * @param UploadedFileInterface $uploadedFile The uploaded file from the request
-     * @param array $config Configuration options:
-     *   - 'directory' (string): Upload directory path (required)
-     *   - 'allowedTypes' (array): Array of allowed media types (required)
-     *   - 'maxSize' (int): Maximum file size in bytes (required)
-     *   - 'filenamePrefix' (string): Prefix for generated filenames (default: 'upload_')
-     * @return Result Success with filename, or failure with error message
-     */
-
     public static function upload(UploadedFileInterface $uploadedFile, array $config): Result
     {
-        // You'll implement the method body in the following steps
-
         $directory = $config['directory'] ?? null;
         $allowedTypes = $config['allowedTypes'] ?? [];
-        $maxSize = $config['maxSize'] ?? 0;
+        $maxSize = (int) ($config['maxSize'] ?? 0);
         $filenamePrefix = $config['filenamePrefix'] ?? 'upload_';
 
         if (empty($directory)) {
             return Result::failure('Upload directory not specified in configuration');
         }
+
         if (empty($allowedTypes)) {
             return Result::failure('Allowed file types not specified in configuration');
         }
+
         if ($maxSize <= 0) {
             return Result::failure('Maximum file size not specified in configuration');
         }
-        if ($uploadedFile->getError() !== UPLOAD_ERR_OK) {
-            return Result::failure('Error uploading file');
-        }
-        if ($maxSize < ($uploadedFile->getSize())) {
-            $maxSize = round($maxSize / (1024 * 1024), 1);
-            return Result::failure('Error, max size file reached');
+
+        $uploadError = $uploadedFile->getError();
+        if ($uploadError !== UPLOAD_ERR_OK) {
+            return Result::failure(self::uploadErrorMessage($uploadError));
         }
 
-        $uploadfiles = $uploadedFile->getClientMediaType();
+        $size = $uploadedFile->getSize();
+        if ($size !== null && $size > $maxSize) {
+            $maxMb = round($maxSize / (1024 * 1024), 1);
 
-        if (!(in_array($uploadfiles, $allowedTypes))) {
-            FlashMessage::error('The type is not accepted');
-            return Result::failure('Error, type is not accepted');
-        }
-
-        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-
-        $filename = uniqid($filenamePrefix) . '.' . $extension;
-
-        if (!is_dir($directory)) {
-            if (!mkdir($directory, 0755, true) && !is_dir($directory)) {
-                return Result::failure('Could not create the directory');
-            }
-        }
-
-        if ($uploadedFile->getError() !== UPLOAD_ERR_OK) {
-            return Result::failure('Error uploading file');
-        }
-
-        if ($uploadedFile->getSize() > $maxSize) {
-            return Result::failure('File is too large (max allowed size exceeded)');
+            return Result::failure("File is too large (maximum {$maxMb} MB).");
         }
 
         $mimeType = $uploadedFile->getClientMediaType();
-
-        if (!in_array($mimeType, $allowedTypes)) {
-            return Result::failure('Error, type is not accepted');
+        if ($mimeType === null || !in_array($mimeType, $allowedTypes, true)) {
+            return Result::failure('File type is not allowed. Use JPEG, PNG, GIF, or WebP.');
         }
 
-        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+        $clientName = $uploadedFile->getClientFilename() ?? 'image';
+        $extension = strtolower(pathinfo($clientName, PATHINFO_EXTENSION));
+        if ($extension === '') {
+            $extension = match ($mimeType) {
+                'image/png' => 'png',
+                'image/gif' => 'gif',
+                'image/webp' => 'webp',
+                default => 'jpg',
+            };
+        }
 
-        $filename = uniqid($filenamePrefix) . '.' . $extension;
+        if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
+            return Result::failure('Could not create the upload directory.');
+        }
 
+        $filename = uniqid($filenamePrefix, true) . '.' . $extension;
         $destination = $directory . DIRECTORY_SEPARATOR . $filename;
 
         try {
@@ -90,17 +71,20 @@ class FileUploadHelper
         }
 
         return Result::success('File uploaded successfully', [
-            'filename' => $filename
+            'filename' => $filename,
         ]);
+    }
 
-        $destination = $directory . DIRECTORY_SEPARATOR . $filename;
-
-        try {
-            $uploadedFile->moveTo($destination);
-        } catch (Exception $e) {
-            return Result::failure('Failed to save uploaded file: ' . $e->getMessage());
-        }
-
-        return Result::success('File uploaded successfully', ['filename' => $filename]);
+    private static function uploadErrorMessage(int $code): string
+    {
+        return match ($code) {
+            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the maximum allowed size.',
+            UPLOAD_ERR_PARTIAL => 'The file was only partially uploaded. Please try again.',
+            UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Server is missing a temporary folder for uploads.',
+            UPLOAD_ERR_CANT_WRITE => 'Failed to write the uploaded file to disk.',
+            UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload.',
+            default => 'Error uploading file.',
+        };
     }
 }

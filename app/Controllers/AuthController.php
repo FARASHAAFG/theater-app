@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Domain\Models\bookingModel;
+use App\Domain\Models\TwoFactorAuthModel;
 use Exception;
 use App\Domain\Models\UserModel;
 use App\Helpers\FlashMessage;
@@ -10,13 +12,28 @@ use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+/**
+ * Controller for authentication
+ */
 class AuthController extends BaseController
 {
-    public function __construct(Container $container, private UserModel $userModel)
+    public function __construct(
+        Container $container,
+        private UserModel $userModel,
+        private TwoFactorAuthModel $twoFactorModel,
+        private bookingModel $bookingModel
+    )
     {
         parent::__construct($container);
     }
 
+    /**
+     * Renders register page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function register(Request $request, Response $response, array $args): Response
     {
         $data['data'] = [
@@ -30,6 +47,13 @@ class AuthController extends BaseController
         return $this->render($response, "auth/register.php", $data);
     }
 
+    /**
+     * Handles account creation
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function store(Request $request, Response $response, array $args): Response
     {
         $form_data = $request->getParsedBody();
@@ -82,6 +106,10 @@ class AuthController extends BaseController
     //* Authentication Lab Methods (login, logout, etc.) would go here
     /**
      * Display the login form (GET request).
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
     public function login(Request $request, Response $response, array $args): Response
     {
@@ -96,23 +124,28 @@ class AuthController extends BaseController
 
     /**
      * Process login form submission (POST request).
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
     public function authenticate(Request $request, Response $response, array $args): Response
     {
-        // TODO: Extract the identifier and password from the submitted form
         $form_data = $request->getParsedBody();
 
-        // TODO: Validate that both fields are present
         if (isset($form_data['identifier']) && isset($form_data['password'])) {
-            // TODO: Attempt to verify the credentials using the UserModel
-            $user = $this->userModel->verifyCredentials($form_data['identifier'], $form_data['password']);
-            // TODO: If authentication fails, display an error and redirect to the login page
+
+            $user = $this->userModel->verifyCredentials(
+                $form_data['identifier'],
+                $form_data['password']
+            );
+
             if ($user === null) {
                 FlashMessage::error('Invalid Credentials.');
                 return $this->redirect($request, $response, 'auth.login');
             }
-            // TODO: Store the authenticated user's data in the session
-            //       (ID, email, full name, role, and a flag indicating they are authenticated)
+
+            // store session user
             SessionManager::set('user', [
                 'id' => $user['id'],
                 'email' => $user['email'],
@@ -120,23 +153,41 @@ class AuthController extends BaseController
                 'role' => $user['role'],
                 'is_authenticated' => true
             ]);
-            // TODO: Display a welcome message and redirect based on role:
-            //       admins go to the admin dashboard, customers go to the user dashboard
+
+            $twoFactorEnabled = $this->twoFactorModel->isEnabled((int) $user['id']);
+
+            SessionManager::set('requires_2fa', $twoFactorEnabled);
+            SessionManager::set('2fa_attempts', 0);
+
+            if ($twoFactorEnabled) {
+                SessionManager::set('2fa_verified', false);
+                if (!SessionManager::get('post_login_route')) {
+                    SessionManager::set(
+                        'post_2fa_route',
+                        $user['role'] === 'admin' ? 'admin.dashboard' : 'user.dashboard'
+                    );
+                }
+                FlashMessage::success("Welcome back, {$user['first_name']}! Please enter your authenticator code.");
+                return $this->redirect($request, $response, '2fa.verify');
+            }
+
+            SessionManager::set('2fa_verified', true);
+            SessionManager::remove('post_2fa_route');
             FlashMessage::success("Welcome back, {$user['first_name']}!");
 
-
-            if ($user['role'] === 'admin') {
-                return $this->redirect($request, $response, 'admin.dashboard');
-            } else {
-                return $this->redirect($request, $response, 'user.dashboard');
-            }
+            return $this->redirectAfterLogin($request, $response, $user);
         }
+
         FlashMessage::error('Please input credentials');
         return $this->redirect($request, $response, 'auth.login');
     }
 
     /**
      * Logout the current user (GET request).
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
     public function logout(Request $request, Response $response, array $args): Response
     {
@@ -155,10 +206,15 @@ class AuthController extends BaseController
     }
 
     /**
-     * Display user dashboard (protected route).
+     * Displays user dashboard (protected route)
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      */
-    public function dashboard(Request $request, Response $response, array $args): Response
+    /*public function dashboard(Request $request, Response $response, array $args): Response
     {
+
         // TODO: Create a $data array with 'title' => 'Dashboard'
         $data = [
             'title' => 'Dashboard'
@@ -166,5 +222,53 @@ class AuthController extends BaseController
 
         // TODO: Render 'user/dashboard.php' view and pass $data
         return $this->render($response, 'user/dashboard.php', $data);
+    }*/
+
+    public function dashboard(Request $request, Response $response): Response
+    {
+        $user = SessionManager::get('user');
+
+        if (!$user) {
+            FlashMessage::error('You must be logged in.');
+            return $this->redirect($request, $response, 'auth.login');
+        }
+
+        $userId = $user['id'];
+
+        // check if 2FA is enabled in DB
+        $twoFactorEnabled = $this->twoFactorModel->isEnabled($userId);
+        $bookingStats = $this->bookingModel->getBookingStatsByUserId($userId);
+
+        $data = [
+            'title' => t('user.dashboard.title'),
+            'twoFactorEnabled' => $twoFactorEnabled,
+            'twoFactorVerified' => SessionManager::get('2fa_verified', false),
+            'bookingStats' => $bookingStats,
+            'recentBookings' => $this->bookingModel->getRecentBookingsForUser($userId, 5),
+        ];
+
+        return $this->render(
+            $response,
+            'user/dashboard.php',
+            $data
+        );
+    }
+
+    private function redirectAfterLogin(Request $request, Response $response, array $user): Response
+    {
+        $routeName = SessionManager::get('post_login_route');
+        $routeArgs = SessionManager::get('post_login_route_args', []);
+        SessionManager::remove('post_login_route');
+        SessionManager::remove('post_login_route_args');
+
+        if (is_string($routeName) && $routeName !== '') {
+            return $this->redirect($request, $response, $routeName, is_array($routeArgs) ? $routeArgs : []);
+        }
+
+        if (($user['role'] ?? '') === 'admin') {
+            return $this->redirect($request, $response, 'admin.dashboard');
+        }
+
+        return $this->redirect($request, $response, 'user.dashboard');
     }
 }

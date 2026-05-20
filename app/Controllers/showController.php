@@ -5,30 +5,49 @@ namespace App\Controllers;
 
 use App\Helpers\FlashMessage;
 use App\Domain\Models\showModel;
-use App\Domain\Models\bookingModel;
-use App\Helpers\SessionManager;
+use App\Domain\Models\ReviewsModel;
 use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+use function DI\get;
+
+/**
+ * Show controller
+ */
 class ShowController extends BaseController
 {
-    public function __construct(Container $container, private showModel $showModel, private bookingModel $bookingModel)
+    /**
+     * Constructor for show controller
+     * @param Container $container
+     * @param showModel $showModel
+     * @param ReviewsModel $reviewsModel
+     */
+    public function __construct(Container $container, private showModel $showModel, private ReviewsModel $reviewsModel)
     {
         parent::__construct($container);
     }
 
-
-
+    /**
+     * Renders index with poster information
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function index(Request $request, Response $response, array $args): Response
     {
         $info = $this->showModel->getAllPosters();
         return $this->render($response, 'admin/index.php', ['data' => $info]);
     }
 
-
-
-
+    /**
+     * Renders shows page with show data
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function renderShows(Request $request, Response $response, array $args): Response
     {
         $shows = $this->showModel->getAllShows();
@@ -38,6 +57,13 @@ class ShowController extends BaseController
     }
 
     //* This the correct one, since it shows correct details and schedules, the other show function is the one that is wrong and needs to be fixed or removed
+    /**
+     * Renders show details with the relevant show data
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function renderShowDetails(Request $request, Response $response, array $args): Response
     {
 
@@ -47,11 +73,19 @@ class ShowController extends BaseController
         $show = $this->showModel->getByShowId($id);
         $poster = $this->showModel->getPosterByShowId($id);
         $schedules = $this->showModel->getSchedulesByShowId($id); // fetch poster data
-        return $this->render($response, 'admin/show_details.php', ['show' => $show, 'poster' => $poster, 'schedules' => $schedules]);
+        $reviews = $this->reviewsModel->getReviewsByShowId($id);
+
+        $ratingData = $this->reviewsModel->getAverageRating($id);
+        return $this->render($response, 'admin/show_details.php', ['show' => $show, 'poster' => $poster, 'schedules' => $schedules, 'reviews' => $reviews, 'ratingData' => $ratingData]);
     }
 
-    //! NEED TO FIX!! DOESNT ACC SHOW THE CORRECT DETAILS
-    //! IT TAKES IN THE POSTER ID RATHER THAN THE SHOW ID SO IT SHOWS THE WRONG SCHEDULES...
+    /**
+     * Gets show details for a specific show
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function show(Request $request, Response $response, array $args): Response
     {
         // this is the poster id...
@@ -61,6 +95,39 @@ class ShowController extends BaseController
         return $this->render($response, 'admin/detail.php', ['poster' => $poster,   'schedules' => $schedules]);
     }
 
+    /**
+     * Handles searches for shows
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
+    public function search(Request $request, Response $response, array $args): Response
+    {
+        $params = $request->getQueryParams();
+        $query = $params['q'] ?? '';
+        $type = $params['type'] ?? '';
+
+        if (strlen($query) > 100) {
+            $query = substr($query, 0, 100);
+        }
+
+        $filteredShows = $this->showModel->searchShows($query, $type);
+
+        $data = ['success' => true, 'query' => $query, 'genre' => $type, 'shows' => $filteredShows];
+        $payload = json_encode($data);
+
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    /**
+     * Deletes the associated show
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function delete(Request $request, Response $response, array $args): Response
     {
         $id = (int)$args['id'];
@@ -70,14 +137,28 @@ class ShowController extends BaseController
         return $this->redirect($request, $response, 'show.index');
     }
 
+    /**
+     * Initiates the add poster page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function init_add_poster(Request $request, Response $response, array $args): Response
     {
-        $id = (int)$args['id'];
-        $poster = $this->showModel->getById($id);
-        return $this->render($response, 'admin/add_poster.php', ['poster' => $poster]);
+        $showId = (int) $args['id'];
+
+        return $this->redirect($request, $response, 'upload.index', ['id' => $showId]);
     }
 
     //? Adds poster to database after form submission in add_poster.php
+    /**
+     * Adds poster to database after form submission in add_poster.php
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function createPoster(Request $request, Response $response, array $args): Response
     {
         $show_id = (int)$args['id'];
@@ -111,6 +192,14 @@ class ShowController extends BaseController
             ]
         );
     }
+
+    /**
+     * Initializes update show page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function init_update_show(Request $request, Response $response, array $args): Response
     {
         $id = (int)$args['id']; // get the ID from URL
@@ -122,7 +211,13 @@ class ShowController extends BaseController
         return $this->render($response, 'admin/update_show.php', ['show' => $show, 'poster' => $poster,   'schedules' => $schedules]);
     }
 
-
+    /**
+     * Updates show
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function update_show(Request $request, Response $response, array $args): Response
     {
         //this id is the actual show id
@@ -222,11 +317,24 @@ class ShowController extends BaseController
         */
     }
 
+    /**
+     * Initializes add show page
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
     public function init_add_show(Request $request, Response $response): Response
     {
         return $this->render($response, 'admin/add_show.php');
     }
 
+    /**
+     * Adds show
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function add_show(Request $request, Response $response, array $args): Response
     {
         $data = $request->getParsedBody();

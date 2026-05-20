@@ -212,6 +212,62 @@ class bookingModel extends BaseModel
 
         return $stmt->fetchAll();
     }
+    /**
+     * @return array{booking_count: int, ticket_count: int, total_spent: float}
+     */
+    public function getBookingStatsByUserId(int $userId): array
+    {
+        $sql = "SELECT
+                    COUNT(DISTINCT t.transaction_id) AS booking_count,
+                    COUNT(r.reservation_id) AS ticket_count,
+                    COALESCE(SUM(CASE WHEN t.status = 'completed' THEN r.price ELSE 0 END), 0) AS total_spent
+                FROM transactions t
+                LEFT JOIN reservations r ON r.transaction_id = t.transaction_id
+                WHERE t.user_id = :user_id";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        $row = $stmt->fetch() ?: [];
+
+        return [
+            'booking_count' => (int) ($row['booking_count'] ?? 0),
+            'ticket_count' => (int) ($row['ticket_count'] ?? 0),
+            'total_spent' => (float) ($row['total_spent'] ?? 0),
+        ];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getRecentBookingsForUser(int $userId, int $limit = 5): array
+    {
+        $sql = "SELECT
+                    t.transaction_id,
+                    t.status,
+                    t.created_at AS booked_at,
+                    sh.showing_id,
+                    sh.room,
+                    sh.start_time,
+                    s.title,
+                    s.title_fr,
+                    COUNT(r.reservation_id) AS seat_count,
+                    COALESCE(SUM(r.price), 0) AS total_amount
+                FROM transactions t
+                INNER JOIN reservations r ON r.transaction_id = t.transaction_id
+                INNER JOIN showings sh ON sh.showing_id = r.showing_id
+                INNER JOIN shows s ON s.show_id = sh.show_id
+                WHERE t.user_id = :user_id
+                GROUP BY t.transaction_id, t.status, t.created_at,
+                         sh.showing_id, sh.room, sh.start_time, s.title, s.title_fr
+                ORDER BY t.created_at DESC
+                LIMIT " . (int) $limit;
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+
+        return $stmt->fetchAll();
+    }
+
     public function getTicketCountByUserId(int $userId): int
     {
         $sql = "SELECT COUNT(r.reservation_id) AS ticket_count

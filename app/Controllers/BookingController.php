@@ -10,69 +10,78 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Helpers\SessionManager;
 
-
+/**
+ * BookingController is the controller used for booking seats
+ */
 class BookingController extends BaseController
 {
+    /**
+     * Constructor for BookingController
+     * @param Container $container
+     * @param showModel $showModel
+     * @param bookingModel $booking_model
+     */
     public function __construct(Container $container, private showModel $showModel, private bookingModel $booking_model)
     {
         parent::__construct($container);
     }
 
-
     public function checkout(Request $request, Response $response, array $args): Response
     {
-        $data = $request->getParsedBody();
-        var_dump($data['seats']);
-
-        //var_dump($data['schedule_id']);
-        $showing = SessionManager::get('schedule');
-        //var_dump($showing[0]['showing_id']);
-        //var_dump($showing[0]['base_price']);
-
-        $seats = SessionManager::get('seats');
-        //var_dump($seats['data']['seats']);
-        $tickets = SessionManager::get('CheckoutData');
-
-        //var_dump($tickets);
+        $data = $request->getParsedBody() ?? [];
         $user = SessionManager::get('user');
-        //var_dump($user['id']);
-        ///exit;
+        $showing = SessionManager::get('schedule');
 
-        $this->booking_model->createBooking($user['id'], $showing[0]['showing_id'], $data['seats'],  $seats['data']['seats'], $showing[0]['base_price']);
-
-
-
-
-        //$this->showModel->$this->bookingModel->createBooking
-
-        // get previous transactions
-        $existing = SessionManager::get('CheckoutData');
-
-        if (!is_array($existing)) {
-            $existing = [];
+        if (!$user) {
+            FlashMessage::error('You must be logged in.');
+            return $this->redirect($request, $response, 'auth.login');
         }
 
-        //$data['seats'];
+        if (empty($showing) || !isset($showing[0]['showing_id'])) {
+            FlashMessage::error(t('booking.error_incomplete'));
+            return $this->redirect($request, $response, 'posters.index');
+        }
 
+        $selectedSeats = $data['seats'] ?? [];
+        if (!is_array($selectedSeats) || $selectedSeats === []) {
+            $seatSession = SessionManager::get('seats', []);
+            $selectedSeats = $seatSession['data']['seats'] ?? [];
+        }
 
-        // add new transaction
-        $existing[] = $data;
+        if (!is_array($selectedSeats) || $selectedSeats === []) {
+            FlashMessage::error(t('booking.error_no_seats'));
+            return $this->redirect($request, $response, 'posters.index');
+        }
 
+        $selectedSeats = array_values(array_map('intval', $selectedSeats));
+        $showingRow = $showing[0];
 
-        // save back
-        SessionManager::set('CheckoutData', $existing);
+        $this->booking_model->createBooking(
+            (int) $user['id'],
+            (int) $showingRow['showing_id'],
+            $selectedSeats,
+            $selectedSeats,
+            (float) $showingRow['base_price']
+        );
 
+        SessionManager::remove('schedule');
+        SessionManager::remove('seats');
+        SessionManager::remove('showTitle');
 
+        FlashMessage::success(t('booking.success'));
 
         return $response
-            ->withHeader('Location', APP_BASE_URL . '/user/shows')
+            ->withHeader('Location', APP_BASE_URL . '/user/tickets')
             ->withStatus(302);
-
-        //return $this->render($response, 'user/checkout.php', [
-        //  'data' => $data
-        //]);
     }
 
+    /**
+     * Display the booking index with session cart data.
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function index(Request $request, Response $response, array $args): Response
     {
         $booking = SessionManager::get('booking', []);
@@ -89,37 +98,27 @@ class BookingController extends BaseController
 
         return $this->render($response, 'booking/bookingIndexView.php', ['booking' => $booking, 'totalItems' => $totalItems, 'grandTotal' => $grandTotal]);
     }
-    public function getBookedSeatIds(int $showingId): array
-    {
-        $sql = "SELECT r.seat_id
-            FROM reservations r
-            JOIN transactions t ON t.transaction_id = r.transaction_id
-            WHERE r.showing_id = :showing_id
-            AND t.status != 'cancelled'";
 
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':showing_id' => $showingId]);
-
-        return array_column($stmt->fetchAll(), 'seat_id');
-    }
     public function tickets(Request $request, Response $response, array $args): Response
     {
-        $showing = SessionManager::get('schedule');
-        //var_dump($showing[0]['showing_id']);
-        //var_dump($showing[0]['base_price']);
-
-        $seats = SessionManager::get('seats');
-        var_dump($seats);
-        //exit;
         $user = SessionManager::get('user');
+        if (!$user) {
+            FlashMessage::error('You must be logged in.');
+            return $this->redirect($request, $response, 'auth.login');
+        }
 
-        $data = $this->booking_model->getFullBookingsByUserId($user['id']);
-
-
-
+        $data = $this->booking_model->getFullBookingsByUserId((int) $user['id']);
 
         return $this->render($response, 'user/tickets.php', ['data' => $data]);
     }
+
+    /**
+     * Gets the schedule of the show from args and re-renders the booking page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function getScheduleForBooking(Request $request, Response $response, array $args): Response
     {
 
@@ -145,6 +144,14 @@ class BookingController extends BaseController
         // fetch poster data
         return $this->render($response, 'user/bookingSchedule.php', ['show' => $show,  'schedules' => $schedules]);
     }
+
+    /**
+     * Renders the bookingSchedule page with the given schedule_id
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function getSelectedId(Request $request, Response $response, array $args): Response
     {
 
@@ -154,18 +161,29 @@ class BookingController extends BaseController
         return $this->render($response, 'user/bookingSchedule.php', ['schedule_id' => $id]);
     }
 
-
-
+    /**
+     * Fetches available seats and uses the data to render seats page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function seatSelect(Request $request, Response $response, array $args): Response
     {
-        //shoing id is parsing
-        $body = $request->getParsedBody();
-        $scheduleId = (int)$body;
+        $body = $request->getParsedBody() ?? [];
+        $scheduleId = (int) ($body['showing_id'] ?? 0);
 
+        if ($scheduleId <= 0) {
+            FlashMessage::error(t('booking.error_incomplete'));
+            return $this->redirect($request, $response, 'posters.index');
+        }
 
         $schedule = $this->showModel->getSchedulesByShowingId($scheduleId);
 
-
+        if (empty($schedule)) {
+            FlashMessage::error(t('booking.error_incomplete'));
+            return $this->redirect($request, $response, 'posters.index');
+        }
 
         SessionManager::set('schedule', $schedule);
 
@@ -173,28 +191,30 @@ class BookingController extends BaseController
         $row_B = $this->showModel->getSeatsByRow("B");
         $row_C = $this->showModel->getSeatsByRow("C");
 
-
         $bookedSeatIds = $this->booking_model->getBookedSeatIds($scheduleId);
 
-
         $data = ["row_A" => $row_A, "row_B" => $row_B, "row_C" => $row_C, "bookedSeatIds" => $bookedSeatIds];
-
-
-
-
-
-
-        //$showingId = (int) ($data['showing_id'] ?? 0);
 
         return $this->render($response, 'user/seats.php', $data);
     }
 
-
+    /**
+     * Getter function
+     * @param int $id
+     * @return int
+     */
     public function SelectedScheduleId(int $id): int
     {
         return $id;
     }
 
+    /**
+     * Renders shows page
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function renderShows(Request $request, Response $response, array $args): Response
     {
         $shows = $this->showModel->getAllShows();
@@ -204,28 +224,35 @@ class BookingController extends BaseController
 
     //the step before the reservation its select the seat and show ticket for purchaise;
 
+    /**
+     * The step before the reservation, select the seat and show ticket for purchase
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function renderSeat(Request $request, Response $response, array $args): Response
     {
-        $data = $request->getParsedBody();
+        $body = $request->getParsedBody() ?? [];
+        $selectedSeats = $body['seats'] ?? [];
 
-        //$seats = $data['seats'] ?? [];
-        $data = ["data" => $data];
+        if (!is_array($selectedSeats) || $selectedSeats === []) {
+            FlashMessage::error(t('booking.error_no_seats'));
+            return $this->redirect($request, $response, 'posters.index');
+        }
 
+        SessionManager::set('seats', ['data' => ['seats' => array_values(array_map('intval', $selectedSeats))]]);
 
-
-        //SessionManager::set('seats', $data);
-
-
-
-
-
-        // TODO: save $seats to DB here
-
-        // Redirect to your booking confirmation page using its Slim route NAME
-
-        return $this->render($response, 'user/booking.php', $data);
+        return $this->render($response, 'user/booking.php', ['data' => $body]);
     }
 
+    /**
+     * Deals with ticket booking logic
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function add(Request $request, Response $response, array $args): Response
     {
         $data = $request->getParsedBody();
@@ -268,6 +295,14 @@ class BookingController extends BaseController
             'booking' => $sessionBooking
         ]);
     }
+
+    /**
+     * Updates bookings
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function update(Request $request, Response $response, array $args): Response
     {
         $data = $request->getParsedBody();
@@ -300,6 +335,14 @@ class BookingController extends BaseController
 
         return $this->redirect($request, $response, 'booking.index');
     }
+
+    /**
+     * Removes booking
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function remove(Request $request, Response $response, array $args): Response
     {
         $data = $request->getParsedBody();
@@ -319,6 +362,14 @@ class BookingController extends BaseController
 
         return $this->redirect($request, $response, 'booking.index');
     }
+
+    /**
+     * Clears your bookings
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
+     */
     public function clear(Request $request, Response $response, array $args): Response
     {
         SessionManager::remove('booking');

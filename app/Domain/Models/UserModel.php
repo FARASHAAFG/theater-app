@@ -18,12 +18,12 @@ class UserModel extends BaseModel
         $this->execute(
             'INSERT INTO `users` (first_name, last_name, username, email, password_hash, created_at) VALUES (:first_name, :last_name, :username, :email, :password_hash, :created_at)',
             [
-                'first_name' => $data['first_name'],
-                'last_name' => $data['last_name'],
-                'username' => $data['username'],
-                'email' => $data['email'],
-                'password_hash' => $hash,
-                'created_at' => date('Y-m-d H:i:s')
+                ':first_name' => $data['first_name'],
+                ':last_name' => $data['last_name'],
+                ':username' => $data['username'],
+                ':email' => $data['email'],
+                ':password_hash' => $hash,
+                ':created_at' => date('Y-m-d H:i:s'),
             ]
         );
         // TODO: Return the new user's ID

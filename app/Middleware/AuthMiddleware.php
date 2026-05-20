@@ -37,7 +37,17 @@ class AuthMiddleware implements MiddlewareInterface
         }
 
         if (!$isAuthenticated) {
-            FlashMessage::error('Please log in to access this page.');
+            $routeContext = RouteContext::fromRequest($request);
+            $route = $routeContext->getRoute();
+            if ($route) {
+                SessionManager::set('post_login_route', $route->getName());
+                SessionManager::set(
+                    'post_login_route_args',
+                    $routeContext->getRoutingResults()->getRouteArguments()
+                );
+            }
+
+            FlashMessage::error('Please log in to book tickets.');
 
             $routeParser = RouteContext::fromRequest($request)->getRouteParser();
             $loginUrl = $routeParser->urlFor('auth.login');

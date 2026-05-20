@@ -20,6 +20,10 @@ class showModel extends BaseModel
         return $this->selectAll(' SELECT * FROM posters JOIN shows ON posters.show_id = shows.show_id');
     }
 
+    /**
+     * Queries database to get all shows
+     * @return array
+     */
     public function getAllShows(): array
     {
         // Query to get ALL shows, even those without posters
@@ -32,6 +36,50 @@ class showModel extends BaseModel
         return $this->selectAll($sql);
     }
 
+    /**
+     * Queries DB to get shows that match the search and the filter
+     * @param string $query
+     * @param mixed $type
+     * @return array
+     */
+    public function searchShows(string $query = '', ?string $type = ''): array
+    {
+        $sql = "SELECT s.*,
+         p.*
+         FROM shows s
+         LEFT JOIN posters p
+         ON s.show_id = p.show_id
+         WHERE 1 = 1 ";
+
+        $params = [];
+
+        if ($query != '') {
+            // Had to make a four the same param but with different names because otherwise it wasn't working D:
+            $params['search1'] = $query;
+            $params['search2'] = $query;
+            $params['search3'] = $query;
+            $params['search4'] = $query;
+            $sql .= " AND (s.title LIKE CONCAT('%', :search1, '%')
+            OR s.title_fr LIKE CONCAT('%', :search2, '%')
+            OR s.description LIKE CONCAT('%', :search3, '%')
+            OR s.description_fr LIKE CONCAT('%', :search4, '%'))";
+        }
+
+        if ($type != '') {
+            $params['type'] = $type;
+            $sql .= " AND s.show_type LIKE CONCAT('%', :type, '%') ";
+        }
+
+        $sql .= " GROUP BY s.show_id ORDER BY s.title ASC";
+
+        return $this->selectAll($sql, $params);
+    }
+
+    /**
+     * Queries DB to get a show by the poster id
+     * @param int $id
+     * @return array|bool
+     */
     public function getById(int $id): array|false
     {
         $sql = "
@@ -44,6 +92,11 @@ class showModel extends BaseModel
         return $this->selectOne($sql, ["id" => $id]);
     }
 
+    /**
+     * Gets posters given the show id
+     * @param int $id
+     * @return array|bool
+     */
     public function getByShowId(int $id): array|false
     {
         $sql = "
@@ -55,6 +108,11 @@ class showModel extends BaseModel
         return $this->selectOne($sql, ["id" => $id]);
     }
     //! If $posterId is actually the inputted show_id maybe change the variable name
+    /**
+     * Gets schedules of a show given a poster id of an associated poster
+     * @param int $posterId
+     * @return array
+     */
     public function getSchedulesByPosterId(int $posterId): array
     {
         $sql = "
@@ -84,7 +142,7 @@ class showModel extends BaseModel
         FROM posters
         WHERE show_id = :showId";
 
-        return $this->selectOne($sql, ['showId' => $showId]);
+        return $this->selectOne($sql, [':showId' => $showId]);
     }
     public function getSeatsByRow($row_label)
     {
@@ -127,10 +185,11 @@ class showModel extends BaseModel
         return $this->selectAll($sql, ['showId' => $showingId]);
     }
 
-    public function deletePosterById(int $id): bool
+    public function deletePosterByShowId(int $showId): bool
     {
-        $sql = "DELETE FROM posters WHERE show_id = :id";
-        return $this->execute($sql, ['id' => $id]);
+        $sql = 'DELETE FROM posters WHERE show_id = :show_id';
+
+        return $this->execute($sql, [':show_id' => $showId]) >= 0;
     }
     public function deleteShowById(int $id): bool
     {
@@ -154,10 +213,18 @@ class showModel extends BaseModel
         return true;
     }
 
-    public function createPoster(int $show_id, bool $is_used, $poster_image): bool
+    public function createPoster(int $show_id, bool|string $is_primary, string $poster_image): bool
     {
-        $sql = "INSERT INTO `posters` (`poster_id`, `show_id`, `poster_image`, `is_used`) VALUES (NULL, :show_id, :poster_image , :is_used);";
-        return $this->execute($sql, ['show_id' => $show_id, 'poster_image' => $poster_image, 'is_used' => $is_used == "Yes" ? 1 : 0]); // ? 1 : 0 should transform the boolean into tinyint format
+        $sql = 'INSERT INTO posters (show_id, poster_image, is_primary)
+                VALUES (:show_id, :poster_image, :is_primary)';
+
+        $primaryFlag = ($is_primary === true || $is_primary === 'Yes' || $is_primary === '1' || $is_primary === 1) ? 1 : 0;
+
+        return $this->execute($sql, [
+            ':show_id' => $show_id,
+            ':poster_image' => $poster_image,
+            ':is_primary' => $primaryFlag,
+        ]) > 0;
     }
 
     public function updateShow(String $title_fr, String $title, String $duration, String $genre, String $language, String $cast, String $show_type, String $is_active, String $description, String $description_fr, int $show_id): bool

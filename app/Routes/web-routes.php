@@ -17,6 +17,8 @@ use App\Controllers\AuthController;
 use App\Controllers\BookingController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\AdminAuthMiddleware;
+use App\Controllers\TwoFactorController;
+use App\Middleware\TwoFactorMiddleware;
 
 
 
@@ -46,35 +48,49 @@ return static function (Slim\App $app): void {
     $app->get('/', [HomeController::class, 'index'])
         ->setName('home.index');
 
+    // searching
+    $app->get('/shows/search', [ShowController::class, 'search'])->setName('show.search');
+
     $app->group('/user', function ($group) {
         $group->get('/shows', [userController::class, 'renderUserShows'])
             ->setName('posters.index');
         $group->get('/show_details/{id}', [userController::class, 'renderShowDetails']);
-        $group->get('/booking/{id}', [BookingController::class, 'getScheduleForBooking'])->setName('schedule.select');
 
-
-
-        $group->post('/seats', [BookingController::class, 'seatSelect'])->setName('seat.select');
-
-        $group->post('/booking', [BookingController::class, 'renderSeat'])->setName('seat.book')->setName('booking');
-        $group->post('/checkout', [BookingController::class, 'checkout'])
-            ->setName('checkout');
-        $group->Get('/tickets', [BookingController::class, 'tickets'])
-            ->setName('ticket');
+        $group->group('', function ($booking) {
+            $booking->get('/booking/{id}', [BookingController::class, 'getScheduleForBooking'])
+                ->setName('schedule.select');
+            $booking->post('/seats', [BookingController::class, 'seatSelect'])
+                ->setName('seat.select');
+            $booking->post('/booking', [BookingController::class, 'renderSeat'])
+                ->setName('seat.book');
+            $booking->post('/checkout', [BookingController::class, 'checkout'])
+                ->setName('checkout');
+            $booking->get('/tickets', [BookingController::class, 'tickets'])
+                ->setName('ticket');
+        })->add(TwoFactorMiddleware::class)
+            ->add(AuthMiddleware::class);
     });
     $app->get('/language/{locale}', function ($request, $response, $args) {
         $locale = $args['locale'];
-
         $allowedLocales = ['en', 'fr'];
-        if (in_array($locale, $allowedLocales)) {
-            $_SESSION['locale'] = $locale;
-            setcookie('locale', $locale, time() + (30 * 24 * 60 * 60), '/');
+
+        if (in_array($locale, $allowedLocales, true)) {
+            \App\Helpers\SessionManager::set('locale', $locale);
+            setcookie('locale', $locale, [
+                'expires' => time() + (30 * 24 * 60 * 60),
+                'path' => '/',
+                'httponly' => false,
+                'samesite' => 'Lax',
+            ]);
         }
 
-        // Redirect back to previous page
-        $referer = $request->getHeaderLine('HTTP_REFERER') ?: '/';
-        return $response->withHeader('Location', $referer)->withStatus(302);
-    });
+        $referer = $request->getHeaderLine('HTTP_REFERER');
+        $redirectTo = ($referer !== '' && str_contains($referer, 'localhost'))
+            ? $referer
+            : APP_BASE_URL . '/';
+
+        return $response->withHeader('Location', $redirectTo)->withStatus(302);
+    })->setName('language.switch');
 
     //* Register & Login Routes
     $app->get('/register', [AuthController::class, 'register'])
@@ -89,8 +105,32 @@ return static function (Slim\App $app): void {
 
     $app->get('/dashboard', [AuthController::class, 'dashboard'])
         ->setName('user.dashboard')
+        ->add(TwoFactorMiddleware::class)
+        ->add(AuthMiddleware::class);
+    // 2FA Routes
+    $app->get('/2fa/setup', [TwoFactorController::class, 'showSetup'])
+        ->setName('2fa.setup')
         ->add(AuthMiddleware::class);
 
+    $app->post('/2fa/verify-and-enable', [TwoFactorController::class, 'verifyAndEnable'])
+        ->setName('2fa.enable')
+        ->add(AuthMiddleware::class);
+
+    $app->get('/2fa/verify', [TwoFactorController::class, 'showVerify'])
+        ->setName('2fa.verify')
+        ->add(AuthMiddleware::class);
+
+    $app->post('/2fa/verify', [TwoFactorController::class, 'verify'])
+        ->setName('2fa.verify.post')
+        ->add(AuthMiddleware::class);
+
+    $app->get('/2fa/disable', [TwoFactorController::class, 'showDisable'])
+        ->setName('2fa.disable.show')
+        ->add(AuthMiddleware::class);
+
+    $app->post('/2fa/disable', [TwoFactorController::class, 'disable'])
+        ->setName('2fa.disable')
+        ->add(AuthMiddleware::class);
     //! -------------------------- //
     // TODO: Review these routes
     /*$app->group('/checkout', function ($group) {
@@ -117,12 +157,14 @@ return static function (Slim\App $app): void {
 
         $group->get('', [AdminDashboardController::class, 'dashboard'])
             ->setName('admin.dashboard');
+
         $group->get('/posters', [ShowController::class, 'index'])
             ->setName('posters.index');
+
         $group->get('/shows', [ShowController::class, 'renderShows'])->setName('show.index');
 
-
         $group->get('/detail/{id}', [ShowController::class, 'show'])->setName('show.detail');
+
         $group->get('/show/delete/{id}', [ShowController::class, 'delete'])
             ->setName('show.delete');
 
@@ -142,7 +184,11 @@ return static function (Slim\App $app): void {
 
         //* Auth
         $group->get('/dashboard', [AdminDashboardController::class, 'dashboard'])->setName('admin.dashboard');
-    })->add(AdminAuthMiddleware::class);
+    })->add(TwoFactorMiddleware::class)
+        ->add(AdminAuthMiddleware::class)
+        ->add(AuthMiddleware::class);
+
+
 
 
 

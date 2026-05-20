@@ -87,6 +87,47 @@ function hs($string)
     return htmlspecialchars((string) $string, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5 | ENT_DISALLOWED, 'UTF-8');
 }
 
+/**
+ * Translate a message key for the current locale.
+ */
+function t(string $key, array $parameters = []): string
+{
+    return \App\Helpers\ViewHelper::translator()->trans($key, $parameters);
+}
+
+/**
+ * Current application locale (en or fr).
+ */
+function locale(): string
+{
+    return \App\Helpers\ViewHelper::translator()->getLocale();
+}
+
+/**
+ * Public URL for an uploaded poster image filename.
+ */
+function poster_url(?string $filename): string
+{
+    if ($filename === null || $filename === '') {
+        return APP_BASE_URL . '/public/data/images/placeholder.jpg';
+    }
+
+    return APP_BASE_URL . APP_UPLOAD_URL_PATH . '/' . ltrim($filename, '/');
+}
+
+/**
+ * Show title for the current locale.
+ *
+ * @param array{title?: string, title_fr?: string} $show
+ */
+function show_title(array $show): string
+{
+    if (locale() === 'fr' && !empty($show['title_fr'])) {
+        return (string) $show['title_fr'];
+    }
+
+    return (string) ($show['title'] ?? '');
+}
 
 if (!function_exists('asset_url')) {
     /**
@@ -180,9 +221,17 @@ function getErrorName(int $error_no): string
 
 function ynn($value)
 {
-    if ($value === null) return "None";
-    if ($value === 1 || $value === 0) {
-        return $value ? "Yes" : "No";
+    if ($value === null) {
+        return t('common.none');
     }
-    return $value;
+    if ($value === 1 || $value === 0 || $value === '1' || $value === '0') {
+        return ((int) $value === 1) ? t('common.yes') : t('common.no');
+    }
+    if ($value === 'Yes' || $value === true) {
+        return t('common.yes');
+    }
+    if ($value === 'No' || $value === false) {
+        return t('common.no');
+    }
+    return (string) $value;
 }

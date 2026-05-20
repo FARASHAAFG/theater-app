@@ -2,6 +2,7 @@
 
 namespace App\Middleware;
 
+use App\Domain\Models\TwoFactorAuthModel;
 use App\Helpers\FlashMessage;
 use App\Helpers\SessionManager;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -13,24 +14,18 @@ use Slim\Routing\RouteContext;
 
 class AdminAuthMiddleware implements MiddlewareInterface
 {
-    public function __construct(private ResponseFactoryInterface $responseFactory) {}
+    public function __construct(
+        private ResponseFactoryInterface $responseFactory,
+        private TwoFactorAuthModel $twoFactorModel
+    ) {}
 
-    /**
-     * Process the request - check if user is authenticated AND is an admin.
-     */
     public function process(Request $request, RequestHandler $handler): Response
     {
-        // TODO: Retrieve the user's authentication status and role from the session.
         $user = SessionManager::get('user', []);
 
-        //       If not authenticated, redirect to the login page.
-        //       If authenticated but not an admin, redirect to the user dashboard
-        //       with an access denied message.
-        //       If both checks pass, allow the request to proceed.
-        //
-        //       Use the same redirect pattern as AuthMiddleware (RouteParser + responseFactory).
+        // not logged in OR not admin
+        if (!$user || ($user['role'] ?? null) !== 'admin') {
 
-        if (!$user || $user['role'] != 'admin') {
             FlashMessage::error('You do not have permission to access this page.');
 
             $routeParser = RouteContext::fromRequest($request)->getRouteParser();
@@ -38,6 +33,20 @@ class AdminAuthMiddleware implements MiddlewareInterface
 
             $response = $this->responseFactory->createResponse(302);
             return $response->withHeader('Location', $dashboardUrl);
+        }
+
+        $userId = $user['id'];
+        if (!$this->twoFactorModel->isEnabled($userId)) {
+
+            FlashMessage::warning(
+                'Admin accounts require Two-Factor Authentication. Please enable 2FA to continue.'
+            );
+
+            $routeParser = RouteContext::fromRequest($request)->getRouteParser();
+            $setupUrl = $routeParser->urlFor('2fa.setup');
+
+            $response = $this->responseFactory->createResponse(302);
+            return $response->withHeader('Location', $setupUrl);
         }
 
         return $handler->handle($request);

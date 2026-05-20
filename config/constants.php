@@ -18,6 +18,9 @@ APP_LANG_DIR . '/' . 'en/messages.json';
 APP_LANG_DIR . '/' . 'fr/messages.json';
 const APP_Lang_DIR = APP_BASE_DIR_PATH . '/lang';
 
+const APP_UPLOAD_DIR = APP_BASE_DIR_PATH . '/public/uploads/images';
+const APP_UPLOAD_URL_PATH = '/uploads/images';
+
 //* HTTP response status code.
 const HTTP_OK = 200;
 const HTTP_CREATED = 201;
