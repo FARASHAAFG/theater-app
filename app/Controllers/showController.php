@@ -5,13 +5,15 @@ namespace App\Controllers;
 
 use App\Helpers\FlashMessage;
 use App\Domain\Models\showModel;
+use App\Domain\Models\bookingModel;
+use App\Helpers\SessionManager;
 use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 class ShowController extends BaseController
 {
-    public function __construct(Container $container, private showModel $showModel)
+    public function __construct(Container $container, private showModel $showModel, private bookingModel $bookingModel)
     {
         parent::__construct($container);
     }
@@ -21,7 +23,7 @@ class ShowController extends BaseController
     public function index(Request $request, Response $response, array $args): Response
     {
         $info = $this->showModel->getAllPosters();
-        return $this->render($response, 'admin/index.php', $info);
+        return $this->render($response, 'admin/index.php', ['data' => $info]);
     }
 
 
@@ -30,7 +32,9 @@ class ShowController extends BaseController
     public function renderShows(Request $request, Response $response, array $args): Response
     {
         $shows = $this->showModel->getAllShows();
-        return $this->render($response, 'admin/shows.php', $shows);
+
+
+        return $this->render($response, 'admin/shows.php', ['data' => $shows]);
     }
 
     //* This the correct one, since it shows correct details and schedules, the other show function is the one that is wrong and needs to be fixed or removed
@@ -117,6 +121,7 @@ class ShowController extends BaseController
 
         return $this->render($response, 'admin/update_show.php', ['show' => $show, 'poster' => $poster,   'schedules' => $schedules]);
     }
+
 
     public function update_show(Request $request, Response $response, array $args): Response
     {

@@ -6,6 +6,8 @@ $rows = [
     "B" => $data["row_B"] ?? [],
     "C" => $data["row_C"] ?? [],
 ];
+
+$booked_seats = $data['bookedSeatIds'] ?? [];
 ?>
 
 <!DOCTYPE html>
@@ -28,11 +30,13 @@ $rows = [
                     <div class="col-auto fw-bold"><?= htmlspecialchars($label) ?></div>
 
                     <?php foreach ($seats as $seat): ?>
+                        <?php $isBooked = in_array($seat['seat_id'], $booked_seats); ?>
                         <div class="col-auto">
                             <button
                                 type="button"
-                                class="seat btn btn-outline-dark"
-                                data-seat="<?= htmlspecialchars($label . $seat['seat_number']) ?>">
+                                class="seat btn <?= $isBooked ? 'btn-danger' : 'btn-outline-dark' ?>"
+                                data-seat="<?= htmlspecialchars($seat['seat_id']) ?>"
+                                <?= $isBooked ? 'disabled' : '' ?>>
                                 <?= htmlspecialchars($seat['seat_number']) ?>
                             </button>
                         </div>
@@ -40,7 +44,6 @@ $rows = [
                 </div>
             <?php endforeach; ?>
 
-            <!-- Hidden inputs get added here by JS when seats are clicked -->
             <div id="hiddenSeats"></div>
 
             <button type="submit" class="btn btn-success mt-3" id="bookBtn" disabled>Book</button>
@@ -50,7 +53,8 @@ $rows = [
         <script>
             let selectedSeats = [];
 
-            $(".seat").on("click", function() {
+            // Only attach click to seats that are NOT disabled
+            $(".seat:not([disabled])").on("click", function() {
                 const seat = $(this).data("seat");
                 $(this).toggleClass("btn-success btn-outline-dark");
 
@@ -60,7 +64,6 @@ $rows = [
                     selectedSeats = selectedSeats.filter(s => s !== seat);
                 }
 
-                // Rebuild hidden inputs to match selected seats
                 $("#hiddenSeats").html(
                     selectedSeats.map(s => `<input type="hidden" name="seats[]" value="${s}">`).join("")
                 );
@@ -69,6 +72,7 @@ $rows = [
             });
         </script>
 
+    </div>
 </body>
 
 </html>

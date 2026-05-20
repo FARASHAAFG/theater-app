@@ -1,3 +1,11 @@
+<?php
+
+use App\Helpers\SessionManager;
+
+$user = SessionManager::get('user');
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,13 +59,7 @@
                     <a class="nav-link" href="<?= APP_BASE_URL ?>/user/shows">Home</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= APP_BASE_URL ?>/booking">Bookings</a>
-                </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= APP_BASE_URL ?>/tickets">My Tickets</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/<?= APP_ROOT_DIR_NAME ?>/language/en">EN</a>
 
@@ -79,21 +81,29 @@
             <div class="d-flex align-items-center gap-3">
 
                 <!-- CART / BOOKING COUNT -->
-                <a href="<?= APP_BASE_URL ?>/booking" class="btn btn-outline-light position-relative">
+                <a href="<?= APP_BASE_URL ?>/user/tickets" class="btn btn-outline-light position-relative">
 
-                    <i class="bi bi-bag-fill"> Booking</i>
+                    <i class="bi bi-bag-fill"> Tickets</i>
 
 
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge">
-                        <?= $bookingCount ?? 0 ?>
+                        <?= SessionManager::get('id') ?? 0 ?>
+
                     </span>
                 </a>
-                <li class="nav-item">
 
 
-                </li>
-                <li class="nav-item">
+                <li class="nav-item d-flex align-items-center">
 
+                    <div class="d-flex align-items-center text-white px-3 py-1 rounded-pill">
+
+                        <i class="bi bi-person-circle me-2"></i>
+
+                        <span class="fw-semibold">
+                            <?= $user ? $user['full_name'] : 'Guest' ?>
+                        </span>
+
+                    </div>
 
                 </li>
 

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Helpers\FlashMessage;
 use App\Domain\Models\showModel;
+use App\Domain\Models\bookingModel;
 use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -12,9 +13,64 @@ use App\Helpers\SessionManager;
 
 class BookingController extends BaseController
 {
-    public function __construct(Container $container, private showModel $showModel)
+    public function __construct(Container $container, private showModel $showModel, private bookingModel $booking_model)
     {
         parent::__construct($container);
+    }
+
+
+    public function checkout(Request $request, Response $response, array $args): Response
+    {
+        $data = $request->getParsedBody();
+        var_dump($data['seats']);
+
+        //var_dump($data['schedule_id']);
+        $showing = SessionManager::get('schedule');
+        //var_dump($showing[0]['showing_id']);
+        //var_dump($showing[0]['base_price']);
+
+        $seats = SessionManager::get('seats');
+        //var_dump($seats['data']['seats']);
+        $tickets = SessionManager::get('CheckoutData');
+
+        //var_dump($tickets);
+        $user = SessionManager::get('user');
+        //var_dump($user['id']);
+        ///exit;
+
+        $this->booking_model->createBooking($user['id'], $showing[0]['showing_id'], $data['seats'],  $seats['data']['seats'], $showing[0]['base_price']);
+
+
+
+
+        //$this->showModel->$this->bookingModel->createBooking
+
+        // get previous transactions
+        $existing = SessionManager::get('CheckoutData');
+
+        if (!is_array($existing)) {
+            $existing = [];
+        }
+
+        //$data['seats'];
+
+
+        // add new transaction
+        $existing[] = $data;
+
+
+        // save back
+        SessionManager::set('CheckoutData', $existing);
+
+
+
+        return $response
+            ->withHeader('Location', APP_BASE_URL . '/user/shows')
+            ->withStatus(302);
+
+        //return $this->render($response, 'user/checkout.php', [
+        //  'data' => $data
+        //]);
     }
 
     public function index(Request $request, Response $response, array $args): Response
@@ -32,6 +88,37 @@ class BookingController extends BaseController
         }
 
         return $this->render($response, 'booking/bookingIndexView.php', ['booking' => $booking, 'totalItems' => $totalItems, 'grandTotal' => $grandTotal]);
+    }
+    public function getBookedSeatIds(int $showingId): array
+    {
+        $sql = "SELECT r.seat_id
+            FROM reservations r
+            JOIN transactions t ON t.transaction_id = r.transaction_id
+            WHERE r.showing_id = :showing_id
+            AND t.status != 'cancelled'";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':showing_id' => $showingId]);
+
+        return array_column($stmt->fetchAll(), 'seat_id');
+    }
+    public function tickets(Request $request, Response $response, array $args): Response
+    {
+        $showing = SessionManager::get('schedule');
+        //var_dump($showing[0]['showing_id']);
+        //var_dump($showing[0]['base_price']);
+
+        $seats = SessionManager::get('seats');
+        var_dump($seats);
+        //exit;
+        $user = SessionManager::get('user');
+
+        $data = $this->booking_model->getFullBookingsByUserId($user['id']);
+
+
+
+
+        return $this->render($response, 'user/tickets.php', ['data' => $data]);
     }
     public function getScheduleForBooking(Request $request, Response $response, array $args): Response
     {
@@ -68,11 +155,13 @@ class BookingController extends BaseController
     }
 
 
+
     public function seatSelect(Request $request, Response $response, array $args): Response
     {
         //shoing id is parsing
         $body = $request->getParsedBody();
         $scheduleId = (int)$body;
+
 
         $schedule = $this->showModel->getSchedulesByShowingId($scheduleId);
 
@@ -85,8 +174,10 @@ class BookingController extends BaseController
         $row_C = $this->showModel->getSeatsByRow("C");
 
 
+        $bookedSeatIds = $this->booking_model->getBookedSeatIds($scheduleId);
 
-        $data = ["row_A" => $row_A, "row_B" => $row_B, "row_C" => $row_C];
+
+        $data = ["row_A" => $row_A, "row_B" => $row_B, "row_C" => $row_C, "bookedSeatIds" => $bookedSeatIds];
 
 
 
@@ -119,6 +210,12 @@ class BookingController extends BaseController
 
         //$seats = $data['seats'] ?? [];
         $data = ["data" => $data];
+
+
+
+        //SessionManager::set('seats', $data);
+
+
 
 
 

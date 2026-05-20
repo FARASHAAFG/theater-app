@@ -2,10 +2,12 @@
 
 namespace App\Controllers;
 
-
+use App\Domain\Models\bookingModel;
 use App\Helpers\FlashMessage;
 use App\Domain\Models\showModel;
+
 use DI\Container;
+use App\Helpers\SessionManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -13,7 +15,7 @@ class userController extends BaseController
 {
 
 
-    public function __construct(Container $container, private showModel $showModel)
+    public function __construct(Container $container, private showModel $showModel, private bookingModel $booking_model)
     {
         parent::__construct($container);
     }
@@ -22,14 +24,21 @@ class userController extends BaseController
     public function index(Request $request, Response $response, array $args): Response
     {
         $info = $this->showModel->getAllPosters();
+
         return $this->render($response, 'admin/index.php', $info);
     }
 
 
     public function renderUserShows(Request $request, Response $response, array $args): Response
     {
+        $user = SessionManager::get('user');
+
+
+        $id = $this->booking_model->getTicketCountByUserId($user['id']);
+
+        SessionManager::set('id', $id);
         $data = $this->showModel->getAllPosters();
-        return $this->render($response, 'user/userShows.php', ["data" => $data]);
+        return $this->render($response, 'user/userShows.php', ['data' => $data]);
     }
 
 
@@ -50,5 +59,4 @@ class userController extends BaseController
         // fetch poster data
         return $this->render($response, 'user/show_details.php', ['show' => $show, 'poster' => $poster, 'schedules' => $schedules]);
     }
-
 }

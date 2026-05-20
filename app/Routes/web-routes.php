@@ -30,6 +30,7 @@ return static function (Slim\App $app): void {
 
     $app->get('/booking/add', [BookingController::class, 'add'])
         ->setName('booking.add');
+        $app->get('/checkout', [BookingController::class, 'showCheckout']);
 
 
     $app->get('/booking/update', [BookingController::class, 'update'])
@@ -39,6 +40,7 @@ return static function (Slim\App $app): void {
         ->setName('booking.remove');
     $app->get('/booking/clear', [BookingController::class, 'clear'])
         ->setName('booking.clear');
+
 
 
     $app->get('/', [HomeController::class, 'index'])
@@ -55,6 +57,10 @@ return static function (Slim\App $app): void {
         $group->post('/seats', [BookingController::class, 'seatSelect'])->setName('seat.select');
 
         $group->post('/booking', [BookingController::class, 'renderSeat'])->setName('seat.book')->setName('booking');
+        $group->post('/checkout', [BookingController::class, 'checkout'])
+            ->setName('checkout');
+        $group->Get('/tickets', [BookingController::class, 'tickets'])
+            ->setName('ticket');
     });
     $app->get('/language/{locale}', function ($request, $response, $args) {
         $locale = $args['locale'];
