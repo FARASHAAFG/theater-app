@@ -239,7 +239,7 @@ Acknowledgments
 
 The application's bootstrap process and structure of this starter template is based on [slim4-skeleton](https://github.com/odan/slim4-skeleton) by [@odan](https://github.com/odan).  Many thanks to the original developers for their work!
 
-### Servers
+### 2. Servers
 
 LivePlay utilizes **Apache HTTP Server** and **Maria DB Server**, so make sure to install those and have them running, otherwise the website will not work!
 
