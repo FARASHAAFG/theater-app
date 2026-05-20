@@ -10,6 +10,8 @@ use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+use function DI\get;
+
 class ShowController extends BaseController
 {
     public function __construct(Container $container, private showModel $showModel, private ReviewsModel $reviewsModel)
@@ -22,11 +24,9 @@ class ShowController extends BaseController
     public function index(Request $request, Response $response, array $args): Response
     {
         $info = $this->showModel->getAllPosters();
-        return $this->render($response, 'admin/index.php', $info);
+        $categories = $this->showModel->getAllCategories();
+        return $this->render($response, 'admin/index.php', [$info, $categories]);
     }
-
-
-
 
     public function renderShows(Request $request, Response $response, array $args): Response
     {
@@ -58,6 +58,25 @@ class ShowController extends BaseController
         $poster = $this->showModel->getById($id);
         $schedules = $this->showModel->getSchedulesByPosterId($id); // fetch poster data
         return $this->render($response, 'admin/detail.php', ['poster' => $poster,   'schedules' => $schedules]);
+    }
+
+    public function search(Request $request, Response $response, array $args): Response
+    {
+        $params = $request->getQueryParams();
+        $query = $params['q'] ?? '';
+        $type = $params['type'] ?? '';
+
+        if (strlen($query) > 100) {
+            $query = substr($query, 0, 100);
+        }
+
+        $filteredShows = $this->showModel->searchShows($query, $type);
+
+        $data = ['success' => true, 'query' => $query, 'genre' => $type, 'shows' => $filteredShows];
+        $payload = json_encode($data);
+
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
     public function delete(Request $request, Response $response, array $args): Response

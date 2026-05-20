@@ -8,9 +8,6 @@ require_once __DIR__ . '/../common/header.php';
 
 $posters = $data ?? [];
 
-
-
-
 ?>
 <div class="mb-4">
     <?= App\Helpers\FlashMessage::render() ?>
@@ -31,7 +28,40 @@ $posters = $data ?? [];
 
     <?php ?>
     <div class="gallery">
+        <!-- Implementing Search And Filtering Logic -->
         <div class="row mt-4">
+            <div class="input-group">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search shows by name or description" aria-label="Search products">
+                <select class="form-select" id="typeFilter" aria-label="Filter by type">
+                    <option value="">All Categories</option>
+
+                    <option value="Show">
+                        Show
+                    </option>
+                    <option value="Danse">
+                        Dance
+                    </option>
+                    <option value="Théâtre">
+                        Theater
+                    </option>
+                    <option value="Concert">
+                        Concert
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display: none;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+        <!-- Search Results Container -->
+        <div id="searchResults" class="row">
+            <!-- Results will be dynamically inserted here by JavaScript -->
+        </div>
+        <!-- Search And Filtering Logic End -->
+        <div class="row mt-4" id="defaultShows">
             <br>
             <?php foreach ($posters as $poster): ?>
 
@@ -64,6 +94,14 @@ $posters = $data ?? [];
     <?php ?>
 </div>
 </body>
+<!-- Pass base URL to JavaScript -->
+<script>
+    // Make APP_BASE_URL available to JavaScript
+    window.APP_BASE_URL = '<?= APP_BASE_URL ?>';
+</script>
+
+<!-- Load JavaScript for live search -->
+<script src="<?= APP_BASE_URL ?>/public/assets/js/show-search.js"></script>
 
 </html>
 

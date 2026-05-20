@@ -44,6 +44,9 @@ return static function (Slim\App $app): void {
     $app->get('/', [HomeController::class, 'index'])
         ->setName('home.index');
 
+    // searching
+    $app->get('/shows/search', [ShowController::class, 'search'])->setName('show.search');
+
     $app->group('/user', function ($group) {
         $group->get('/shows', [userController::class, 'renderUserShows'])
             ->setName('posters.index');
@@ -98,12 +101,14 @@ return static function (Slim\App $app): void {
 
         $group->get('', [AdminDashboardController::class, 'dashboard'])
             ->setName('admin.dashboard');
+
         $group->get('/posters', [ShowController::class, 'index'])
             ->setName('posters.index');
+
         $group->get('/shows', [ShowController::class, 'renderShows'])->setName('show.index');
 
-
         $group->get('/detail/{id}', [ShowController::class, 'show'])->setName('show.detail');
+
         $group->get('/show/delete/{id}', [ShowController::class, 'delete'])
             ->setName('show.delete');
 
@@ -124,6 +129,8 @@ return static function (Slim\App $app): void {
         //* Auth
         $group->get('/dashboard', [AdminDashboardController::class, 'dashboard'])->setName('admin.dashboard');
     })->add(AdminAuthMiddleware::class);
+
+
 
 
 

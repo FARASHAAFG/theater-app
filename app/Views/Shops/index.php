@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../common/header.php';
-$posters = $data;
+$posters = $data ?? []; // Was giving an error so i added "?? []"
 
 
 ?>

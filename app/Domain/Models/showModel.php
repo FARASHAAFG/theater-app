@@ -32,6 +32,51 @@ class showModel extends BaseModel
         return $this->selectAll($sql);
     }
 
+    public function searchShows(string $query = '', ?string $type = ''): array
+    {
+        // NO ERRORS UNTIL HERE
+        $sql = "SELECT s.*,
+         p.*
+         FROM shows s
+         LEFT JOIN posters p
+         ON s.show_id = p.show_id
+         WHERE 1 = 1 ";
+
+        $params = [];
+
+        if ($query != '') {
+            // Had to make a four the same param but with different names because otherwise it wasn't working D:
+            $params['search1'] = $query;
+            $params['search2'] = $query;
+            $params['search3'] = $query;
+            $params['search4'] = $query;
+            $sql .= " AND (s.title LIKE CONCAT('%', :search1, '%')
+            OR s.title_fr LIKE CONCAT('%', :search2, '%')
+            OR s.description LIKE CONCAT('%', :search3, '%')
+            OR s.description_fr LIKE CONCAT('%', :search4, '%'))";
+        }
+
+        if ($type != '') {
+            $params['type'] = $type;
+            $sql .= " AND s.show_type LIKE CONCAT('%', :type, '%') ";
+        }
+
+        $sql .= " GROUP BY s.show_id ORDER BY s.title ASC";
+
+        return $this->selectAll($sql, $params);
+    }
+
+    public function getAllCategories(): array
+    {
+        $sql = "SELECT DISTINCT show_type
+        FROM shows s
+        LEFT JOIN posters p
+        ON s.show_id = p.show_id
+        ";
+
+        return $this->selectAll($sql);
+    }
+
     public function getById(int $id): array|false
     {
         $sql = "
